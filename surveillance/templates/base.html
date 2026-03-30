@@ -1,0 +1,106 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Butterfly AI{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --panel: #16213e;
+            --accent: #4ecca3;
+            --border: #0f3460;
+            --danger: #e94560;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg); 
+            color: white; 
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Tactical Navbar */
+        .tactical-nav {
+            background: var(--panel);
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 60px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        
+        .nav-item {
+            color: #95a5a6;
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .nav-item:hover, .nav-item.active { color: var(--accent); }
+
+        /* Language Switcher Styling */
+        .lang-control {
+            background: var(--bg);
+            color: var(--accent);
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .user-tag {
+            font-size: 0.7rem;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .main-container { padding: 20px; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <nav class="tactical-nav">
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-item" style="font-weight: bold; color: var(--accent);">BUTTERFLY</a>
+            <a href="{% url 'home' %}" class="nav-item">{% trans "Home" %}</a>
+            <a href="{% url 'dashboard' %}" class="nav-item">{% trans "Dashboard" %}</a>
+        </div>
+
+        <div class="nav-links">
+            <select class="lang-control" onchange="location = '/set-language/' + this.value + '/'">
+                {% get_available_languages as LANGUAGES %}
+                {% for lang in LANGUAGES %}
+                    <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                        {{ lang.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            {% if user.is_authenticated %}
+                <span class="user-tag">{{ user.username }}</span>
+                <a href="{% url 'logout' %}" class="nav-item" style="font-size: 0.7rem;">{% trans "Logout" %}</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="main-container">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

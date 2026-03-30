@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI System - Register</title>
+    <style>
+        /* (Same CSS as login above) */
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .login-card { background: #16213e; border-radius: 20px; padding: 40px; border: 1px solid #0f3460; width: 100%; max-width: 450px; text-align: center; }
+        h1 { color: #4ecca3; text-transform: uppercase; letter-spacing: 3px; font-size: 1.5rem; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        input { width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #0f3460; border-radius: 8px; color: white; box-sizing: border-box; }
+        .full { grid-column: span 2; }
+        .btn-cyber { width: 100%; padding: 12px; background: #4ecca3; border: none; border-radius: 8px; color: #1a1a2e; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .links { margin-top: 15px; font-size: 0.8rem; }
+        .links a { color: #e94560; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>Register Personnel</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid">
+                <input type="text" name="username" placeholder="USERNAME" required class="full">
+                <input type="text" name="first_name" placeholder="FIRST NAME" required>
+                <input type="text" name="last_name" placeholder="LAST NAME" required>
+                <input type="email" name="email" placeholder="EMAIL ADDRESS" required class="full">
+                <input type="password" name="password" placeholder="PASSWORD" required>
+                <input type="password" name="password2" placeholder="CONFIRM" required>
+            </div>
+            <button type="submit" class="btn-cyber">Create Account</button>
+        </form>
+        <div class="links">
+            <a href="{% url 'login' %}">Back to Login</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+# Butterfly System - Pashto Translation
+# Copyright (C) 2026
+msgid ""
+msgstr ""
+"Project-Id-Version: Butterfly 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 15:40+0430\n"
+"PO-Revision-Date: 2026-03-10 15:40+0430\n"
+"Last-Translator: Gemini AI\n"
+"Language-Team: Pashto\n"
+"Language: ps\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\surveillance\templates\base.html:80
+msgid "Home"
+msgstr "کور پاڼه"
+
+#: .\surveillance\templates\base.html:81
+msgid "Dashboard"
+msgstr "ډشبورډ"
+
+#: .\surveillance\templates\base.html:96
+msgid "Logout"
+msgstr "وتل"
+
+#: .\surveillance\templates\surveillance\dashboard.html:4
+msgid "Butterfly - Tactical Dashboard"
+msgstr "بټر فلای - تاکتیکي ډشبورډ"
+
+#: .\surveillance\templates\surveillance\dashboard.html:85
+msgid "SYSTEM ADMINISTRATION"
+msgstr "د سیسټم اداره"
+
+#: .\surveillance\templates\surveillance\dashboard.html:85
+msgid "VIEWER ACCESS"
+msgstr "د لیدونکي لاسرسی"
+
+#: .\surveillance\templates\surveillance\dashboard.html:90
+msgid "Enroll New Subject"
+msgstr "نوی کس ثبت کړئ"
+
+#: .\surveillance\templates\surveillance\dashboard.html:93
+msgid "Full Name"
+msgstr "بشپړ نوم"
+
+#: .\surveillance\templates\surveillance\dashboard.html:95
+msgid "Enroll Subject"
+msgstr "شخص شامل کړئ"
+
+#: .\surveillance\templates\surveillance\dashboard.html:99
+msgid "Access Restricted."
+msgstr "لاسری محدود دی."
+
+#: .\surveillance\templates\surveillance\dashboard.html:106
+msgid "Optical Sensor Feed"
+msgstr "د نوري سینسر جریان"
+
+#: .\surveillance\templates\surveillance\dashboard.html:107
+msgid "ACTIVE"
+msgstr "فعال"
+
+#: .\surveillance\templates\surveillance\dashboard.html:110
+msgid "Scanning Environment..."
+msgstr "د چاپیریال سکین کول..."
+
+#: .\surveillance\templates\surveillance\dashboard.html:114
+msgid "Identity Confirmation"
+msgstr "د هویت تایید"
+
+#: .\surveillance\templates\surveillance\dashboard.html:119
+msgid "Activity Alerts"
+msgstr "د فعالیت خبرتیاوې"
+
+#: .\surveillance\templates\surveillance\dashboard.html:124
+msgid "Watchlist Database"
+msgstr "د څارنې ډیټابیس"
+
+#: .\surveillance\templates\surveillance\dashboard.html:132
+msgid "Database Empty"
+msgstr "ډیټابیس خالي دی"
+
+#: .\surveillance\templates\surveillance\dashboard.html:151
+msgid "CONFIRMED"
+msgstr "تایید شو"
+
+#: .\surveillance\templates\surveillance\dashboard.html:159
+msgid "CRITICAL"
+msgstr "بحراني"
+
+#: .\surveillance\templates\surveillance\dashboard.html:159
+msgid "FALL DETECTED"
+msgstr "لویدل کشف شول"
+
+#: .\surveillance\templates\surveillance\dashboard.html:162
+msgid "GREETING"
+msgstr "سلامي / اشاره"
+
+#: .\surveillance\templates\surveillance\dashboard.html:162
+msgid "Wave Detected"
+msgstr "د لاس اشاره کشف شوه"
+
+#: .\surveillance\templates\surveillance\dashboard.html:184
+msgid "DISCONNECTED"
+msgstr "تړاو پرې شو"
+
+#: .\surveillance\templates\surveillance\home.html:38
+msgid "SYSTEM HUB"
+msgstr "د سیسټم مرکز"
+
+#: .\surveillance\templates\surveillance\home.html:39
+msgid "Authorized Personnel Only - Neural Link Active"
+msgstr "یوازې مجاز پرسونل - عصبي اړیکه فعاله ده"
+
+#: .\surveillance\templates\surveillance\home.html:43
+msgid "Surveillance"
+msgstr "څارنه (نظارت)"
+
+#: .\surveillance\templates\surveillance\home.html:44
+msgid "Initialize live vision stream, occupancy counting, and gesture recognition protocols."
+msgstr "د ژوندۍ لید جریان، د خلکو شمیرل، او د اشارې پیژندنې پروتوکولونه پیل کړئ."
+
+#: .\surveillance\templates\surveillance\home.html:49
+msgid "Registration"
+msgstr "ثبتول"
+
+#: .\surveillance\templates\surveillance\home.html:50
+msgid "Enroll new target subjects into the DeepFace identity verification database."
+msgstr "د DeepFace هویت تایید ډیټابیس کې نوي هدف لرونکي کسان شامل کړئ."

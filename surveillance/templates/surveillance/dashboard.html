@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Butterfly - Tactical Dashboard" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 3-Column Grid Layout + Bottom Row */
+    .dashboard-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1.5fr 1fr; 
+        grid-template-rows: 1.5fr 1fr; 
+        gap: 15px; 
+        max-width: 1600px; 
+        margin: auto; 
+        height: calc(100vh - 100px); 
+    }
+
+    .panel { 
+        background: #16213e; 
+        border-radius: 15px; 
+        border: 1px solid #0f3460; 
+        display: flex; 
+        flex-direction: column; 
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .panel-header {
+        padding: 10px 15px;
+        background: rgba(15, 52, 96, 0.8);
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #0f3460;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .log-container { padding: 10px; overflow-y: auto; flex-grow: 1; }
+
+    .alert-item { 
+        padding: 10px; border-radius: 8px; margin-bottom: 8px; 
+        font-size: 0.8rem; 
+        border-{% if LANGUAGE_BIDI %}right{% else %}left{% endif %}: 4px solid rgba(255,255,255,0.3);
+        animation: slideIn 0.3s ease;
+    }
+
+    .match-bg { background: #0f3460; border-color: #4ecca3; } 
+    .fall-bg { background: #7b1113; border-color: #ff4d4d; }  
+    .wave-bg { background: #3d3d00; border-color: #f1c40f; }
+
+    .counter-view { justify-content: center; text-align: center; }
+    #counter { font-size: 6rem; font-weight: bold; color: #4ecca3; line-height: 1; }
+    #label { font-size: 0.75rem; color: #95a5a6; margin-top: 10px; }
+
+    .cyber-input { 
+        width: 100%; background: #1a1a2e; border: 1px solid #0f3460; 
+        color: white; padding: 10px; margin-bottom: 10px; border-radius: 8px; 
+        box-sizing: border-box; font-size: 0.8rem;
+    }
+    .btn-upload { 
+        width: 100%; background: #4ecca3; color: #1a1a2e; border: none; 
+        padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; 
+    }
+
+    .personnel-gallery { grid-column: span 3; }
+    .gallery-wrapper { display: flex; gap: 10px; overflow-x: auto; padding: 10px; }
+    .target-card { min-width: 80px; text-align: center; background: #1a1a2e; padding: 8px; border-radius: 10px; border: 1px solid #0f3460; }
+    .target-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #4ecca3; }
+
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .dot { height: 8px; width: 8px; background-color: #4ecca3; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    
+    <div class="panel" style="padding: 20px;">
+        <div class="panel-header">
+            <span><span class="dot"></span> 
+                {% if user.is_staff %}{% trans "SYSTEM ADMINISTRATION" %}{% else %}{% trans "VIEWER ACCESS" %}{% endif %}
+            </span>
+        </div>
+
+        {% if user.is_staff %}
+            <h2 style="font-size: 0.7rem; color: #4ecca3; margin-top: 15px;">{% trans "Enroll New Subject" %}</h2>
+<form action="{% url 'upload_target' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="name" class="cyber-input" placeholder="{% trans 'Full Name' %}" required>
+    <input type="file" name="image" class="cyber-input" accept="image/*" required>
+    
+    <select name="duration" class="cyber-input" id="duration-select" onchange="toggleCustomDate(this.value)">
+        <option value="none">{% trans "No Expiration" %}</option>
+        <option value="1h">{% trans "1 Hour" %}</option>
+        <option value="12h">{% trans "12 Hours" %}</option>
+        <option value="1d">{% trans "1 Day" %}</option>
+        <option value="7d">{% trans "1 Week" %}</option>
+        <option value="custom">{% trans "Custom Date..." %}</option>
+    </select>
+
+    <input type="datetime-local" name="custom_date" id="custom-date" class="cyber-input" style="display:none;">
+
+    <button type="submit" class="btn-upload">{% trans "Enroll Subject" %}</button>
+</form>
+
+<script>
+    function toggleCustomDate(val) {
+        document.getElementById('custom-date').style.display = (val === 'custom') ? 'block' : 'none';
+    }
+</script>
+        {% else %}
+            <div style="margin-top: 20px; text-align: center; border: 1px dashed #0f3460; padding: 20px; border-radius: 10px;">
+                <p style="font-size: 0.8rem; color: #95a5a6;">{% trans "Access Restricted." %}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="panel counter-view" id="main-view">
+        <div class="panel-header">
+            <span>{% trans "Optical Sensor Feed" %}</span> 
+            <span id="sys-status">{% trans "ACTIVE" %}</span>
+        </div>
+        <div id="counter">00</div>
+        <div id="label">{% trans "Scanning Environment..." %}</div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header" style="color:#4ecca3;"><span>{% trans "Identity Confirmation" %}</span></div>
+        <div class="log-container" id="id-log"></div>
+    </div>
+
+    <div class="panel" style="grid-column: 1;">
+        <div class="panel-header" style="color:#f1c40f;"><span>{% trans "Activity Alerts" %}</span></div>
+        <div class="log-container" id="action-log"></div>
+    </div>
+
+    <div class="panel personnel-gallery" style="grid-column: 2 / span 2;">
+        <div class="panel-header"><span>{% trans "Watchlist Database" %}</span></div>
+        <div class="gallery-wrapper">
+            {% for person in targets %}
+            <div class="target-card">
+                <img src="{{ person.image.url }}" alt="{{ person.name }}">
+                <div style="font-size: 0.6rem; color: #4ecca3; margin-top: 5px;">{{ person.name }}</div>
+            </div>
+            {% empty %}
+            <div style="font-size: 0.7rem; color: #95a5a6; padding: 10px;">{% trans "Database Empty" %}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/pose/');
+    
+    const idLog = document.getElementById('id-log');
+    const actionLog = document.getElementById('action-log');
+    const counterDisplay = document.getElementById('counter');
+    const labelDisplay = document.getElementById('label');
+    const mainView = document.getElementById('main-view');
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+
+        if (data.type === "TARGET_MATCH") {
+            createLogItem(idLog, "{% trans 'CONFIRMED' %}", data.name, "match-bg");
+        } 
+        
+        if (data.type === "STAT_UPDATE") {
+            counterDisplay.innerText = data.count.toString().padStart(2, '0');
+            labelDisplay.innerText = data.message;
+
+            if (data.action === "FALL DETECTED") {
+                createLogItem(actionLog, "{% trans 'CRITICAL' %}", "{% trans 'FALL DETECTED' %}", "fall-bg");
+                triggerFlash("#e94560");
+            } else if (data.action === "HAND WAVING") {
+                createLogItem(actionLog, "{% trans 'GREETING' %}", "{% trans 'Wave Detected' %}", "wave-bg");
+            }
+            
+            counterDisplay.style.color = (data.count === 0) ? "#95a5a6" : "#4ecca3";
+        }
+    };
+
+    function createLogItem(container, title, message, className) {
+        const item = document.createElement('div');
+        item.className = `alert-item ${className}`;
+        item.innerHTML = `<strong>${title}:</strong> ${message}<br><small>${new Date().toLocaleTimeString()}</small>`;
+        container.prepend(item);
+        
+        if (container.children.length > 8) container.removeChild(container.lastChild);
+    }
+
+    function triggerFlash(color) {
+        mainView.style.boxShadow = `inset 0 0 40px ${color}`;
+        setTimeout(() => mainView.style.boxShadow = "none", 800);
+    }
+
+    socket.onclose = () => { 
+        document.getElementById('sys-status').innerText = "{% trans 'DISCONNECTED' %}";
+        counterDisplay.style.color = "#e94560";
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+# Butterfly System - Persian Translation
+# Copyright (C) 2026
+msgid ""
+msgstr ""
+"Project-Id-Version: Butterfly 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 15:40+0430\n"
+"PO-Revision-Date: 2026-03-10 15:40+0430\n"
+"Last-Translator: Gemini AI\n"
+"Language-Team: Persian\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\surveillance\templates\base.html:80
+msgid "Home"
+msgstr "خانه"
+
+#: .\surveillance\templates\base.html:81
+msgid "Dashboard"
+msgstr "داشبورد"
+
+#: .\surveillance\templates\base.html:96
+msgid "Logout"
+msgstr "خروج"
+
+#: .\surveillance\templates\surveillance\dashboard.html:4
+msgid "Butterfly - Tactical Dashboard"
+msgstr "باترفلای - داشبورد تاکتیکی"
+
+#: .\surveillance\templates\surveillance\dashboard.html:85
+msgid "SYSTEM ADMINISTRATION"
+msgstr "مدیریت سیستم"
+
+#: .\surveillance\templates\surveillance\dashboard.html:85
+msgid "VIEWER ACCESS"
+msgstr "دسترسی ناظر"
+
+#: .\surveillance\templates\surveillance\dashboard.html:90
+msgid "Enroll New Subject"
+msgstr "ثبت سوژه جدید"
+
+#: .\surveillance\templates\surveillance\dashboard.html:93
+msgid "Full Name"
+msgstr "نام کامل"
+
+#: .\surveillance\templates\surveillance\dashboard.html:95
+msgid "Enroll Subject"
+msgstr "ثبت هویت"
+
+#: .\surveillance\templates\surveillance\dashboard.html:99
+msgid "Access Restricted."
+msgstr "دسترسی محدود شده است."
+
+#: .\surveillance\templates\surveillance\dashboard.html:106
+msgid "Optical Sensor Feed"
+msgstr "خروجی سنسور نوری"
+
+#: .\surveillance\templates\surveillance\dashboard.html:107
+msgid "ACTIVE"
+msgstr "فعال"
+
+#: .\surveillance\templates\surveillance\dashboard.html:110
+msgid "Scanning Environment..."
+msgstr "در حال اسکن محیط..."
+
+#: .\surveillance\templates\surveillance\dashboard.html:114
+msgid "Identity Confirmation"
+msgstr "تایید هویت"
+
+#: .\surveillance\templates\surveillance\dashboard.html:119
+msgid "Activity Alerts"
+msgstr "هشدارهای فعالیتی"
+
+#: .\surveillance\templates\surveillance\dashboard.html:124
+msgid "Watchlist Database"
+msgstr "پایگاه داده لیست نظارت"
+
+#: .\surveillance\templates\surveillance\dashboard.html:132
+msgid "Database Empty"
+msgstr "پایگاه داده خالی است"
+
+#: .\surveillance\templates\surveillance\dashboard.html:151
+msgid "CONFIRMED"
+msgstr "تایید شد"
+
+#: .\surveillance\templates\surveillance\dashboard.html:159
+msgid "CRITICAL"
+msgstr "بحرانی"
+
+#: .\surveillance\templates\surveillance\dashboard.html:159
+msgid "FALL DETECTED"
+msgstr "سقوط شناسایی شد"
+
+#: .\surveillance\templates\surveillance\dashboard.html:162
+msgid "GREETING"
+msgstr "خوش‌آمدگویی / اشاره"
+
+#: .\surveillance\templates\surveillance\dashboard.html:162
+msgid "Wave Detected"
+msgstr "تکان دادن دست شناسایی شد"
+
+#: .\surveillance\templates\surveillance\dashboard.html:184
+msgid "DISCONNECTED"
+msgstr "قطع اتصال"
+
+#: .\surveillance\templates\surveillance\home.html:38
+msgid "SYSTEM HUB"
+msgstr "مرکز مدیریت سیستم"
+
+#: .\surveillance\templates\surveillance\home.html:39
+msgid "Authorized Personnel Only - Neural Link Active"
+msgstr "فقط پرسنل مجاز - پیوند عصبی فعال است"
+
+#: .\surveillance\templates\surveillance\home.html:43
+msgid "Surveillance"
+msgstr "نظارت تصویری"
+
+#: .\surveillance\templates\surveillance\home.html:44
+msgid "Initialize live vision stream, occupancy counting, and gesture recognition protocols."
+msgstr "راه‌اندازی جریان بینایی زنده، شمارش ظرفیت و پروتکل‌های تشخیص حرکت."
+
+#: .\surveillance\templates\surveillance\home.html:49
+msgid "Registration"
+msgstr "ثبت نام"
+
+#: .\surveillance\templates\surveillance\home.html:50
+msgid "Enroll new target subjects into the DeepFace identity verification database."
+msgstr "درج سوژه‌های هدف جدید در پایگاه داده تأیید هویت DeepFace."
