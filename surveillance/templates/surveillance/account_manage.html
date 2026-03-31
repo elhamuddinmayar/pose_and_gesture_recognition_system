@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Butterfly - Access Control{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --danger: #e74c3c;
+        --warning: #f1c40f;
+        --info: #3498db;
+    }
+
+    .manage-wrapper {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .header-section {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    /* Actions Bar */
+    .top-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .btn-register-new {
+        background: var(--warning);
+        color: #1a1a1a;
+        padding: 12px 25px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2);
+    }
+
+    .btn-register-new:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(241, 196, 15, 0.4);
+    }
+
+    /* Controls Bar Styling */
+    .controls-group {
+        display: flex;
+        gap: 15px;
+        flex-grow: 1;
+        max-width: 800px;
+    }
+
+    .search-form {
+        display: flex;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 50px;
+        padding: 5px 20px;
+        flex-grow: 2;
+    }
+
+    .search-input {
+        background: transparent; border: none; color: white;
+        padding: 10px; width: 100%; outline: none;
+    }
+
+    .sort-select {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        color: var(--accent);
+        padding: 0 15px;
+        border-radius: 50px;
+        outline: none;
+    }
+
+    /* User Grid */
+    .user-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+    }
+
+    .user-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 30px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .user-identity h3 { color: var(--accent); margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px; }
+    .status-indicator { height: 10px; width: 10px; border-radius: 50%; background: var(--accent); }
+    .user-details { font-size: 0.9rem; color: #bdc3c7; line-height: 1.8; }
+    .role-badge { display: inline-block; padding: 5px 15px; border-radius: 30px; font-size: 0.7rem; margin-top: 15px; font-weight: bold; }
+    .badge-admin { background: rgba(241, 196, 15, 0.1); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-obs { background: rgba(149, 165, 166, 0.1); color: #95a5a6; border: 1px solid #95a5a6; }
+
+    .card-actions { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; gap: 12px; }
+    .action-link { flex: 1; text-align: center; padding: 10px; border-radius: 12px; text-decoration: none; font-size: 0.85rem; transition: 0.3s; }
+    .btn-toggle { border: 1px solid var(--accent); color: var(--accent); }
+    .btn-toggle:hover { background: var(--accent); color: #1a1a1a; }
+    .btn-delete { border: 1px solid var(--danger); color: var(--danger); max-width: 50px; }
+    .btn-delete:hover { background: var(--danger); color: white; }
+</style>
+
+<div class="manage-wrapper">
+    <div class="header-section">
+        <h1 style="font-size: 3rem; letter-spacing: 8px;">{% trans "USER ARCHIVE" %}</h1>
+        <p style="color: #95a5a6;">{% trans "System Administration & Database Integrity" %}</p>
+    </div>
+
+    <div class="top-actions">
+        <a href="{% url 'register' %}" class="btn-register-new">
+            + {% trans "ENROLL NEW TARGET" %}
+        </a>
+
+        <form method="GET" action="{% url 'account_manage' %}" class="controls-group" id="masterForm">
+            <div class="search-form">
+                <input type="text" name="q" class="search-input" placeholder="{% trans 'Search...' %}" value="{{ query|default:'' }}">
+                <button type="submit" style="background:transparent; border:none; color:var(--accent);">🔍</button>
+            </div>
+
+            <select name="sort" class="sort-select" onchange="this.form.submit()">
+                <option value="date_new" {% if current_sort == 'date_new' %}selected{% endif %}>{% trans "Recently Joined" %}</option>
+                <option value="date_old" {% if current_sort == 'date_old' %}selected{% endif %}>{% trans "Oldest Members" %}</option>
+                <option value="name_asc" {% if current_sort == 'name_asc' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
+                <option value="name_desc" {% if current_sort == 'name_desc' %}selected{% endif %}>{% trans "Name (Z-A)" %}</option>
+                <option value="rank_admin" {% if current_sort == 'rank_admin' %}selected{% endif %}>{% trans "Rank: Admin First" %}</option>
+                <option value="rank_obs" {% if current_sort == 'rank_obs' %}selected{% endif %}>{% trans "Rank: Observer First" %}</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="user-grid">
+        {% for user in users %}
+        <div class="user-card">
+            <div class="user-identity">
+                <h3><div class="status-indicator"></div> {{ user.username }}</h3>
+                <div class="user-details">
+                    <div><strong>{% trans "EMAIL:" %}</strong> {{ user.email }}</div>
+                    <div><strong>{% trans "JOINED:" %}</strong> {{ user.date_joined|date:"M d, Y" }}</div>
+                </div>
+                {% if user.is_superuser or user.groups.all %}
+                    <span class="role-badge badge-admin">{% trans "ADMINISTRATOR" %}</span>
+                {% else %}
+                    <span class="role-badge badge-obs">{% trans "OBSERVER" %}</span>
+                {% endif %}
+            </div>
+
+            <div class="card-actions">
+                <a href="{% url 'toggle_admin_role' user.id %}" class="action-link btn-toggle">
+                   {% if user.groups.all %}{% trans "DEMOTE" %}{% else %}{% trans "PROMOTE" %}{% endif %}
+                </a>
+                {% if user.id != request.user.id %}
+                <a href="javascript:void(0)" onclick="if(confirm('Terminate access?')) { window.location.href='{% url 'delete_user' user.id %}' }" class="action-link btn-delete">🗑</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 50px; text-align: center;">
+        <a href="{% url 'home' %}" style="color: var(--accent); text-decoration: none; letter-spacing: 2px;">
+            « {% trans "BACK TO HUB" %}
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -44,10 +44,10 @@
             <p>{% trans "Initialize live vision stream, occupancy counting, and gesture recognition protocols." %}</p>
         </a>
 
-        {% if user.is_staff %}
-        <a href="{% url 'register' %}" class="card">
-            <h2 style="color: #f1c40f;">{% trans "Registration" %}</h2>
-            <p>{% trans "Enroll new target subjects into the DeepFace identity verification database." %}</p>
+        {% if is_admin %}
+        <a href="{% url 'account_manage' %}" class="card">
+            <h2 style="color: #3498db;">{% trans "Database" %}</h2>
+            <p>{% trans "Access the User Archive, manage access levels, and enroll new personnel into the system." %}</p>
         </a>
         {% endif %}
     </div>
