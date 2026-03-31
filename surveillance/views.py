@@ -8,6 +8,7 @@ from django.db import models
 from datetime import timedelta
 from .forms import UserRegistrationForm, LoginForm
 from .models import TargetPerson
+from django.core.paginator import Paginator 
 
 # Helper to check if user has admin privileges
 def is_admin(user):
@@ -68,33 +69,42 @@ def account_manage(request):
     query = request.GET.get('q', '')
     sort_type = request.GET.get('sort', '-date_joined')
 
-    # Base Queryset with search
-    users = User.objects.filter(
+    # Base Queryset
+    users_list = User.objects.filter(
         models.Q(username__icontains=query) | 
         models.Q(email__icontains=query)
     )
 
-    # Sorting Logic
-    if sort_type == 'name_asc':
-        users = users.order_by('username')
-    elif sort_type == 'name_desc':
-        users = users.order_by('-username')
-    elif sort_type == 'date_old':
-        users = users.order_by('date_joined')
-    elif sort_type == 'date_new':
-        users = users.order_by('-date_joined')
-    elif sort_type == 'rank_admin':
-        users = users.order_by('-is_staff', 'username')
-    elif sort_type == 'rank_obs':
-        users = users.order_by('is_staff', 'username')
+    # Sorting Logic (Optimized)
+    sort_map = {
+        'name_asc': 'username',
+        'name_desc': '-username',
+        'date_old': 'date_joined',
+        'date_new': '-date_joined',
+        'rank_admin': ['-is_staff', 'username'],
+        'rank_obs': ['is_staff', 'username'],
+    }
+    
+    order = sort_map.get(sort_type, '-date_joined')
+    if isinstance(order, list):
+        users_list = users_list.order_by(*order)
     else:
-        users = users.order_by('-date_joined')
+        users_list = users_list.order_by(order)
+
+    # Pagination: 6 users per page
+    paginator = Paginator(users_list, 6) 
+    page_number = request.GET.get('page')
+    users = paginator.get_page(page_number)
+
+    # Show "Clear" button only if user filtered or sorted
+    is_filtered = bool(query or sort_type not in ['-date_joined', 'date_new'])
 
     return render(request, 'surveillance/account_manage.html', {
         'users': users,
         'query': query,
         'current_sort': sort_type,
-        'is_admin': True
+        'is_admin': True,
+        'is_filtered': is_filtered
     })
 
 @login_required

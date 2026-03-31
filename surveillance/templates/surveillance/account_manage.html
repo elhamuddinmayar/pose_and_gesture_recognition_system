@@ -56,6 +56,7 @@
         gap: 15px;
         flex-grow: 1;
         max-width: 800px;
+        align-items: center;
     }
 
     .search-form {
@@ -79,6 +80,7 @@
         padding: 0 15px;
         border-radius: 50px;
         outline: none;
+        height: 45px;
     }
 
     /* User Grid */
@@ -111,6 +113,12 @@
     .btn-toggle:hover { background: var(--accent); color: #1a1a1a; }
     .btn-delete { border: 1px solid var(--danger); color: var(--danger); max-width: 50px; }
     .btn-delete:hover { background: var(--danger); color: white; }
+
+    /* Pagination Styles */
+    .pagination-wrapper { margin-top: 40px; display: flex; justify-content: center; gap: 10px; align-items: center; }
+    .page-link { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; color: white; text-decoration: none; transition: 0.3s; }
+    .page-link:hover { border-color: var(--accent); color: var(--accent); }
+    .page-current { color: var(--accent); font-family: monospace; font-weight: bold; }
 </style>
 
 <div class="manage-wrapper">
@@ -127,17 +135,23 @@
         <form method="GET" action="{% url 'account_manage' %}" class="controls-group" id="masterForm">
             <div class="search-form">
                 <input type="text" name="q" class="search-input" placeholder="{% trans 'Search...' %}" value="{{ query|default:'' }}">
-                <button type="submit" style="background:transparent; border:none; color:var(--accent);">🔍</button>
+                <button type="submit" style="background:transparent; border:none; color:var(--accent); cursor: pointer;">🔍</button>
             </div>
 
             <select name="sort" class="sort-select" onchange="this.form.submit()">
-                <option value="date_new" {% if current_sort == 'date_new' %}selected{% endif %}>{% trans "Recently Joined" %}</option>
+                <option value="date_new" {% if current_sort == 'date_new' or current_sort == '-date_joined' %}selected{% endif %}>{% trans "Recently Joined" %}</option>
                 <option value="date_old" {% if current_sort == 'date_old' %}selected{% endif %}>{% trans "Oldest Members" %}</option>
                 <option value="name_asc" {% if current_sort == 'name_asc' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
                 <option value="name_desc" {% if current_sort == 'name_desc' %}selected{% endif %}>{% trans "Name (Z-A)" %}</option>
                 <option value="rank_admin" {% if current_sort == 'rank_admin' %}selected{% endif %}>{% trans "Rank: Admin First" %}</option>
                 <option value="rank_obs" {% if current_sort == 'rank_obs' %}selected{% endif %}>{% trans "Rank: Observer First" %}</option>
             </select>
+
+            {% if is_filtered %}
+            <a href="{% url 'account_manage' %}" style="color: var(--danger); text-decoration: none; font-size: 0.75rem; border-bottom: 1px solid var(--danger); white-space: nowrap; margin-left: 10px;">
+                ✕ {% trans "CLEAR" %}
+            </a>
+            {% endif %}
         </form>
     </div>
 
@@ -166,8 +180,28 @@
                 {% endif %}
             </div>
         </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #95a5a6;">
+            {% trans "No users found matching your criteria." %}
+        </div>
         {% endfor %}
     </div>
+
+    {% if users.has_other_pages %}
+    <div class="pagination-wrapper">
+        {% if users.has_previous %}
+            <a href="?page={{ users.previous_page_number }}&q={{ query }}&sort={{ current_sort }}" class="page-link">« {% trans "Prev" %}</a>
+        {% endif %}
+
+        <span class="page-current">
+            {{ users.number }} / {{ users.paginator.num_pages }}
+        </span>
+
+        {% if users.has_next %}
+            <a href="?page={{ users.next_page_number }}&q={{ query }}&sort={{ current_sort }}" class="page-link">{% trans "Next" %} »</a>
+        {% endif %}
+    </div>
+    {% endif %}
 
     <div style="margin-top: 50px; text-align: center;">
         <a href="{% url 'home' %}" style="color: var(--accent); text-decoration: none; letter-spacing: 2px;">
