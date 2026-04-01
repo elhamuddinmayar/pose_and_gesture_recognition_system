@@ -1,35 +1,43 @@
+{% load i18n %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'fa' or LANGUAGE_CODE == 'ps' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
-    <title>AI System - Register</title>
+    <title>{% trans "AI System - Register" %}</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        body { font-family: 'Segoe UI', 'Tahoma', sans-serif; background: #1a1a2e; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; text-align: start; }
 
-        /* Notification Styling (Matches Home Page) */
-        .msg-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        /* Notification Styling */
+        .msg-container { position: fixed; top: 20px; z-index: 9999; }
+        
+        /* Position alerts based on direction */
+        [dir="ltr"] .msg-container { right: 20px; }
+        [dir="rtl"] .msg-container { left: 20px; }
+
         .toast-msg { 
             background: #16213e; color: white; padding: 15px 25px; border-radius: 10px; 
             margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            border-left: 5px solid #4ecca3; animation: slideIn 0.5s ease-out; min-width: 250px;
+            border-inline-start: 5px solid #4ecca3; animation: slideIn 0.5s ease-out; min-width: 250px;
         }
-        .toast-msg.error { border-left-color: #e94560; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
+        .toast-msg.error { border-inline-start-color: #e94560; }
+        
+        @keyframes slideIn { 
+            from { transform: translateX({% if LANGUAGE_CODE == 'fa' or LANGUAGE_CODE == 'ps' %}-100%{% else %}100%{% endif %}); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
 
         /* --- Registration Card --- */
         .login-card { background: #16213e; border-radius: 20px; padding: 40px; border: 1px solid #0f3460; width: 100%; max-width: 450px; text-align: center; z-index: 1; }
-        h1 { color: #4ecca3; text-transform: uppercase; letter-spacing: 3px; font-size: 1.5rem; margin-bottom: 25px; }
+        h1 { color: #4ecca3; text-transform: uppercase; letter-spacing: {% if LANGUAGE_CODE == 'en' %}3px{% else %}0{% endif %}; font-size: 1.5rem; margin-bottom: 25px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input { width: 100%; padding: 14px; background: #1a1a2e; border: 1px solid #0f3460; border-radius: 10px; color: white; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input { width: 100%; padding: 14px; background: #1a1a2e; border: 1px solid #0f3460; border-radius: 10px; color: white; box-sizing: border-box; outline: none; transition: 0.3s; text-align: inherit; }
         input:focus { border-color: #4ecca3; background: #1f1f3d; }
         .full { grid-column: span 2; }
         .btn-cyber { width: 100%; padding: 14px; background: #4ecca3; border: none; border-radius: 10px; color: #1a1a2e; font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; transition: 0.3s; letter-spacing: 1px; }
         .btn-cyber:hover { background: #45b791; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(78, 204, 163, 0.3); }
         .links { margin-top: 20px; font-size: 0.85rem; }
         .links a { color: #e94560; text-decoration: none; transition: 0.3s; }
-        .links a:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -38,7 +46,7 @@
         {% if messages %}
             {% for message in messages %}
                 <div class="toast-msg {{ message.tags }}">
-                    <strong style="display:block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; color: #4ecca3; opacity: 0.9;">System Status</strong>
+                    <strong style="display:block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; color: #4ecca3; opacity: 0.9;">{% trans "System Status" %}</strong>
                     {{ message }}
                 </div>
             {% endfor %}
@@ -48,58 +56,53 @@
             {% for field in user_form %}
                 {% for error in field.errors %}
                     <div class="toast-msg error">
-                        <strong style="display:block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; color: #e94560; opacity: 0.9;">Alert: {{ field.label }}</strong>
+                        <strong style="display:block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; color: #e94560; opacity: 0.9;">{% trans "Alert" %}: {{ field.label }}</strong>
                         {{ error }}
                     </div>
                 {% endfor %}
-            {% endfor %}
-            {% for error in user_form.non_field_errors %}
-                <div class="toast-msg error">
-                    <strong style="display:block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; color: #e94560; opacity: 0.9;">System Error</strong>
-                    {{ error }}
-                </div>
             {% endfor %}
         {% endif %}
     </div>
 
     <div class="login-card">
-        <h1>Register Personnel</h1>
+        <h1>{% trans "Register Personnel" %}</h1>
 
         <form method="post">
             {% csrf_token %}
             <div class="grid">
-                <input type="text" name="username" placeholder="USERNAME" required class="full" 
+                <input type="text" name="username" placeholder="{% trans 'USERNAME' %}" required class="full" 
                        value="{{ user_form.username.value|default_if_none:'' }}">
                 
-                <input type="text" name="first_name" placeholder="FIRST NAME" required 
+                <input type="text" name="first_name" placeholder="{% trans 'FIRST NAME' %}" required 
                        value="{{ user_form.first_name.value|default_if_none:'' }}">
                 
-                <input type="text" name="last_name" placeholder="LAST NAME" required 
+                <input type="text" name="last_name" placeholder="{% trans 'LAST NAME' %}" required 
                        value="{{ user_form.last_name.value|default_if_none:'' }}">
                 
-                <input type="email" name="email" placeholder="EMAIL ADDRESS" required class="full" 
+                <input type="email" name="email" placeholder="{% trans 'EMAIL ADDRESS' %}" required class="full" 
                        value="{{ user_form.email.value|default_if_none:'' }}">
                 
-                <input type="password" name="password" placeholder="PASSWORD" required>
+                <input type="password" name="password" placeholder="{% trans 'PASSWORD' %}" required>
                 
-                <input type="password" name="password2" placeholder="CONFIRM" required>
+                <input type="password" name="password2" placeholder="{% trans 'CONFIRM' %}" required>
             </div>
-            <button type="submit" class="btn-cyber">Initialize Profile</button>
+            <button type="submit" class="btn-cyber">{% trans "Initialize Profile" %}</button>
         </form>
 
         <div class="links">
-            <a href="{% url 'login' %}">Return to Login</a>
+            <a href="{% url 'login' %}">{% trans "Return to Login" %}</a>
         </div>
     </div>
 
     <script>
-        // Auto-hide notifications after 5 seconds with a smooth exit
         setTimeout(function() {
             var alertBox = document.getElementById('alert-box');
             if (alertBox) {
                 alertBox.style.transition = "opacity 0.6s ease, transform 0.6s ease";
                 alertBox.style.opacity = "0";
-                alertBox.style.transform = "translateX(50px)";
+                // Adjusted slide-out for RTL/LTR
+                let exitX = document.documentElement.dir === "rtl" ? "-50px" : "50px";
+                alertBox.style.transform = `translateX(${exitX})`;
                 setTimeout(() => alertBox.remove(), 600);
             }
         }, 5000);

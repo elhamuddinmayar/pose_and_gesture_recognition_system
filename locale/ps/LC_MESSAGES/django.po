@@ -4,9 +4,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Butterfly 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-10 15:40+0430\n"
-"PO-Revision-Date: 2026-03-10 15:40+0430\n"
-"Last-Translator: Gemini AI\n"
+"POT-Creation-Date: 2026-04-01 15:14+0430\n"
+"PO-Revision-Date: 2026-04-01 16:10+0430\n"
+"Last-Translator: ChatGPT\n"
 "Language-Team: Pashto\n"
 "Language: ps\n"
 "MIME-Version: 1.0\n"
@@ -14,97 +14,158 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\surveillance\templates\base.html:80
-msgid "Home"
-msgstr "کور پاڼه"
-
-#: .\surveillance\templates\base.html:81
+#: .\surveillance\templates\base.html:93
 msgid "Dashboard"
-msgstr "ډشبورډ"
+msgstr "ډاشبورډ"
 
-#: .\surveillance\templates\base.html:96
+#: .\surveillance\templates\base.html:94
+msgid "Accounts"
+msgstr "حسابونه"
+
+#: .\surveillance\templates\base.html:109
 msgid "Logout"
 msgstr "وتل"
 
+#: .\surveillance\templates\registration\login.html:8
+msgid "Butterfly - System Access"
+msgstr "باترفلای - سیسټم ته لاسرسی"
+
+#: .\surveillance\templates\registration\login.html:83
+msgid "SYSTEM STATUS"
+msgstr "د سیسټم حالت"
+
+#: .\surveillance\templates\registration\login.html:92
+msgid "Authorize"
+msgstr "اجازه ورکول"
+
+#: .\surveillance\templates\registration\login.html:95
+msgid "USERNAME OR EMAIL"
+msgstr "کارن نوم یا برېښنالیک"
+
+#: .\surveillance\templates\registration\login.html:96
+#: .\surveillance\templates\registration\register.html:85
+msgid "PASSWORD"
+msgstr "پټنوم"
+
+#: .\surveillance\templates\registration\login.html:97
+msgid "Access System"
+msgstr "سیسټم ته ننوتل"
+
+#: .\surveillance\templates\registration\login.html:100
+msgid "Create Account"
+msgstr "حساب جوړ کړئ"
+
+#: .\surveillance\templates\registration\login.html:101
+msgid "Cancel"
+msgstr "لغوه"
+
+#: .\surveillance\templates\registration\register.html:7
+msgid "AI System - Register"
+msgstr "د AI سیسټم - ثبت"
+
+#: .\surveillance\templates\registration\register.html:49
+msgid "System Status"
+msgstr "د سیسټم حالت"
+
+#: .\surveillance\templates\registration\register.html:59
+msgid "Alert"
+msgstr "خبرتیا"
+
+#: .\surveillance\templates\registration\register.html:68
+msgid "Register Personnel"
+msgstr "پرسونل ثبت کړئ"
+
+#: .\surveillance\templates\registration\register.html:73
+msgid "USERNAME"
+msgstr "کارن نوم"
+
+#: .\surveillance\templates\registration\register.html:76
+msgid "FIRST NAME"
+msgstr "لومړی نوم"
+
+#: .\surveillance\templates\registration\register.html:79
+msgid "LAST NAME"
+msgstr "تخلص"
+
+#: .\surveillance\templates\registration\register.html:82
+msgid "EMAIL ADDRESS"
+msgstr "د برېښنالیک پته"
+
+#: .\surveillance\templates\registration\register.html:87
+msgid "CONFIRM"
+msgstr "تأیید"
+
+#: .\surveillance\templates\registration\register.html:89
+msgid "Initialize Profile"
+msgstr "پروفایل جوړ کړئ"
+
+#: .\surveillance\templates\registration\register.html:93
+msgid "Return to Login"
+msgstr "ننوتلو ته ستنیدل"
+
+#: .\surveillance\templates\surveillance\account_manage.html:132
+msgid "Register New User"
+msgstr "نوی کارن ثبت کړئ"
+
+#: .\surveillance\templates\surveillance\account_manage.html:168
+msgid "ADMINISTRATOR"
+msgstr "مدیر"
+
 #: .\surveillance\templates\surveillance\dashboard.html:4
 msgid "Butterfly - Tactical Dashboard"
-msgstr "بټر فلای - تاکتیکي ډشبورډ"
+msgstr "باترفلای - تاکتیکي ډاشبورډ"
 
-#: .\surveillance\templates\surveillance\dashboard.html:85
-msgid "SYSTEM ADMINISTRATION"
-msgstr "د سیسټم اداره"
+#: .\surveillance\templates\surveillance\dashboard.html:77
+msgid "SYSTEM CONTROL"
+msgstr "د سیسټم کنټرول"
 
-#: .\surveillance\templates\surveillance\dashboard.html:85
-msgid "VIEWER ACCESS"
-msgstr "د لیدونکي لاسرسی"
+#: .\surveillance\templates\surveillance\dashboard.html:80
+msgid "Surveillance Hub"
+msgstr "د څارنې مرکز"
 
-#: .\surveillance\templates\surveillance\dashboard.html:90
-msgid "Enroll New Subject"
-msgstr "نوی کس ثبت کړئ"
+#: .\surveillance\templates\surveillance\dashboard.html:92
+msgid "Optical Sensor Feed"
+msgstr "د نوري سنسر جریان"
 
 #: .\surveillance\templates\surveillance\dashboard.html:93
-msgid "Full Name"
-msgstr "بشپړ نوم"
-
-#: .\surveillance\templates\surveillance\dashboard.html:95
-msgid "Enroll Subject"
-msgstr "شخص شامل کړئ"
-
-#: .\surveillance\templates\surveillance\dashboard.html:99
-msgid "Access Restricted."
-msgstr "لاسری محدود دی."
-
-#: .\surveillance\templates\surveillance\dashboard.html:106
-msgid "Optical Sensor Feed"
-msgstr "د نوري سینسر جریان"
-
-#: .\surveillance\templates\surveillance\dashboard.html:107
 msgid "ACTIVE"
 msgstr "فعال"
 
-#: .\surveillance\templates\surveillance\dashboard.html:110
+#: .\surveillance\templates\surveillance\dashboard.html:96
 msgid "Scanning Environment..."
-msgstr "د چاپیریال سکین کول..."
+msgstr "چاپیریال سکین کیږي..."
 
-#: .\surveillance\templates\surveillance\dashboard.html:114
+#: .\surveillance\templates\surveillance\dashboard.html:100
 msgid "Identity Confirmation"
 msgstr "د هویت تایید"
 
-#: .\surveillance\templates\surveillance\dashboard.html:119
+#: .\surveillance\templates\surveillance\dashboard.html:105
 msgid "Activity Alerts"
 msgstr "د فعالیت خبرتیاوې"
 
-#: .\surveillance\templates\surveillance\dashboard.html:124
-msgid "Watchlist Database"
-msgstr "د څارنې ډیټابیس"
-
-#: .\surveillance\templates\surveillance\dashboard.html:132
-msgid "Database Empty"
-msgstr "ډیټابیس خالي دی"
-
-#: .\surveillance\templates\surveillance\dashboard.html:151
+#: .\surveillance\templates\surveillance\dashboard.html:141
 msgid "CONFIRMED"
-msgstr "تایید شو"
+msgstr "تایید شوی"
 
-#: .\surveillance\templates\surveillance\dashboard.html:159
+#: .\surveillance\templates\surveillance\dashboard.html:149
 msgid "CRITICAL"
 msgstr "بحراني"
 
-#: .\surveillance\templates\surveillance\dashboard.html:159
+#: .\surveillance\templates\surveillance\dashboard.html:149
 msgid "FALL DETECTED"
-msgstr "لویدل کشف شول"
+msgstr "سقوط کشف شو"
 
-#: .\surveillance\templates\surveillance\dashboard.html:162
+#: .\surveillance\templates\surveillance\dashboard.html:152
 msgid "GREETING"
-msgstr "سلامي / اشاره"
+msgstr "سلام"
 
-#: .\surveillance\templates\surveillance\dashboard.html:162
+#: .\surveillance\templates\surveillance\dashboard.html:152
 msgid "Wave Detected"
-msgstr "د لاس اشاره کشف شوه"
+msgstr "لاس خوځول کشف شو"
 
-#: .\surveillance\templates\surveillance\dashboard.html:184
+#: .\surveillance\templates\surveillance\dashboard.html:174
 msgid "DISCONNECTED"
-msgstr "تړاو پرې شو"
+msgstr "قطع شوی"
 
 #: .\surveillance\templates\surveillance\home.html:38
 msgid "SYSTEM HUB"
@@ -116,16 +177,29 @@ msgstr "یوازې مجاز پرسونل - عصبي اړیکه فعاله ده"
 
 #: .\surveillance\templates\surveillance\home.html:43
 msgid "Surveillance"
-msgstr "څارنه (نظارت)"
+msgstr "څارنه"
 
 #: .\surveillance\templates\surveillance\home.html:44
-msgid "Initialize live vision stream, occupancy counting, and gesture recognition protocols."
-msgstr "د ژوندۍ لید جریان، د خلکو شمیرل، او د اشارې پیژندنې پروتوکولونه پیل کړئ."
+msgid ""
+"Initialize live vision stream, occupancy counting, and gesture recognition protocols."
+msgstr "د ژوندۍ ویډیو جریان، د اشغال شمېرنه او د حرکت پېژندنې پروتوکولونه فعال کړئ."
 
 #: .\surveillance\templates\surveillance\home.html:49
-msgid "Registration"
-msgstr "ثبتول"
+msgid "Database"
+msgstr "ډیټابیس"
 
-#: .\surveillance\templates\surveillance\home.html:50
-msgid "Enroll new target subjects into the DeepFace identity verification database."
-msgstr "د DeepFace هویت تایید ډیټابیس کې نوي هدف لرونکي کسان شامل کړئ."
+#: .\surveillance\templates\surveillance\target_management.html:4
+msgid "Watchlist Database"
+msgstr "د څارنې لیست ډیټابیس"
+
+#: .\surveillance\templates\surveillance\target_management.html:44
+msgid "Database Actions"
+msgstr "د ډیټابیس کړنې"
+
+#: .\surveillance\templates\surveillance\target_management.html:46
+msgid "Enroll New Subject"
+msgstr "نوی شخص ثبت کړئ"
+
+#: .\surveillance\templates\surveillance\target_management.html:80
+msgid "Database Empty"
+msgstr "ډیټابیس خالي دی"

@@ -1,11 +1,13 @@
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<html lang="{{ LANGUAGE_CODE }}" 
+      dir="{% if LANGUAGE_CODE == 'fa' or LANGUAGE_CODE == 'ps' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Butterfly AI{% endblock %}</title>
     <style>
+
         :root {
             --bg: #1a1a2e;
             --panel: #16213e;
@@ -69,6 +71,17 @@
         }
 
         .main-container { padding: 20px; }
+
+        /* Add this to ensure flexbox items flip correctly in RTL */
+        [dir="rtl"] .nav-links {
+            flex-direction: row; /* Flex stays row, but order flips because of dir=rtl */
+        }
+        
+        /* Adjust margins for icons/text in RTL */
+        [dir="rtl"] .nav-item {
+            letter-spacing: 0; /* Persian/Pashto don't look good with letter-spacing */
+            font-family: 'Tahoma', 'Arial', sans-serif;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
