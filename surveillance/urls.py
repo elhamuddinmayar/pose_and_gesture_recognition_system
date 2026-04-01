@@ -5,7 +5,10 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'), 
-    path('upload-target/', views.upload_target, name='upload_target'),   
+    path('upload-target/', views.upload_target, name='upload_target'),
+    path('management/register/', views.target_registration, name='target_registration'),
+    path('management/targets/', views.target_management, name='target_management'),
+    path('target/<int:pk>/', views.target_detail, name='target_detail'),   
     path("register/", views.register, name="register"),
     #account management URLS
     path("login/", views.login_view, name="login"),

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "New Subject Enrollment" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reg-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+    .reg-card { 
+        background: #16213e; 
+        border-radius: 15px; 
+        border: 1px solid #0f3460; 
+        padding: 35px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        text-align: left; /* Ensures default alignment is left for English labels */
+    }
+    
+    /* Grid Logic */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .span-2 { grid-column: span 2; }
+    .full-width { grid-column: span 3; }
+    
+    .section-title { 
+        color: #4ecca3; text-transform: uppercase; font-size: 0.9rem; 
+        letter-spacing: 2px; margin: 30px 0 15px 0; border-bottom: 1px solid #0f3460; padding-bottom: 8px;
+        display: flex; align-items: center; gap: 10px;
+    }
+
+    /* Input Styling with Direction Fix */
+    .cyber-input { 
+        width: 100%; background: #1a1a2e; border: 1px solid #0f3460; 
+        color: white; padding: 12px; border-radius: 8px; box-sizing: border-box; margin-top: 8px;
+        transition: border 0.3s;
+        text-align: inherit; /* Inherits direction from 'auto' detection */
+    }
+    .cyber-input:focus { border-color: #4ecca3; outline: none; }
+    
+    /* Label Alignment */
+    label { 
+        color: #95a5a6; font-size: 0.75rem; font-weight: bold; 
+        text-transform: uppercase; display: block;
+    }
+    
+    .btn-group { display: flex; gap: 15px; margin-top: 40px; }
+    
+    .btn-save { 
+        flex: 2; background: #4ecca3; color: #1a1a2e; border: none; padding: 15px; 
+        border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;
+        transition: 0.3s;
+    }
+    .btn-save:hover { background: #45b391; box-shadow: 0 0 15px rgba(78, 204, 163, 0.4); }
+
+    .btn-back { 
+        flex: 1; background: transparent; color: #95a5a6; border: 1px solid #0f3460; 
+        padding: 15px; border-radius: 8px; text-align: center; text-decoration: none;
+        font-weight: bold; text-transform: uppercase; font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reg-container">
+    <div class="reg-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: white; margin: 0;">{% trans "Subject Enrollment System" %}</h2>
+            <span style="color: #4ecca3; font-family: monospace; font-size: 0.8rem;">SECURE_UPLOAD_v3.2</span>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="section-title"><i class="fas fa-id-card"></i> {% trans "1. Core Biometrics" %}</div>
+            <div class="form-grid">
+                <div><label>{{ form.name.label }}</label>{{ form.name }}</div>
+                <div><label>{{ form.last_name.label }}</label>{{ form.last_name }}</div>
+                <div><label>{{ form.father_name.label }}</label>{{ form.father_name }}</div>
+                <div class="span-2">
+                    <label>{{ form.image.label }}</label>
+                    {{ form.image }}
+                </div>
+                <div><label>{{ form.gender.label }}</label>{{ form.gender }}</div>
+            </div>
+
+            <div class="section-title"><i class="fas fa-user-tag"></i> {% trans "2. Personal Profile" %}</div>
+            <div class="form-grid">
+                <div><label>{{ form.age.label }}</label>{{ form.age }}</div>
+                <div><label>{{ form.marital_status.label }}</label>{{ form.marital_status }}</div>
+                <div><label>{{ form.job.label }}</label>{{ form.job }}</div>
+                <div class="full-width"><label>{{ form.place_of_birth.label }}</label>{{ form.place_of_birth }}</div>
+            </div>
+
+            <div class="section-title"><i class="fas fa-address-book"></i> {% trans "3. Identification & Contact" %}</div>
+            <div class="form-grid">
+                <div><label>{{ form.tazkira_number.label }}</label>{{ form.tazkira_number }}</div>
+                <div><label>{{ form.phone_number.label }}</label>{{ form.phone_number }}</div>
+                <div class="full-width"><label>{{ form.address.label }}</label>{{ form.address }}</div>
+            </div>
+
+            <div class="section-title"><i class="fas fa-gavel"></i> {% trans "4. Criminal Record & TTL" %}</div>
+            <div class="form-grid">
+                <div class="full-width"><label>{{ form.crime.label }}</label>{{ form.crime }}</div>
+                <div class="full-width"><label>{{ form.description.label }}</label>{{ form.description }}</div>
+                
+                <div class="span-2">
+                    <label>{% trans "Authorization Window" %}</label>
+                    <select name="duration" class="cyber-input">
+                        <option value="none">{% trans "Permanent Access" %}</option>
+                        <option value="1h">{% trans "1 Hour" %}</option>
+                        <option value="12h">{% trans "12 Hours" %}</option>
+                        <option value="1d">{% trans "1 Day" %}</option>
+                        <option value="7d">{% trans "7 Days" %}</option>
+                        <option value="custom">{% trans "Custom Date..." %}</option>
+                    </select>
+                </div>
+                <div id="custom-date-box" style="display:none;">
+                    <label>{% trans "Expiry Timestamp" %}</label>
+                    <input type="datetime-local" name="custom_date" class="cyber-input">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="{% url 'target_management' %}" class="btn-back">{% trans "Abort" %}</a>
+                <button type="submit" class="btn-save">{% trans "Initialize Subject Enrollment" %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Find all input/textarea/select elements
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            if(!el.classList.contains('btn-save') && el.type !== 'submit') {
+                el.classList.add('cyber-input');
+                // Fix directionality for Dari/Pashto/Arabic input
+                el.setAttribute('dir', 'auto'); 
+            }
+        });
+    });
+
+    function toggleDate(val) {
+        document.getElementById('custom-date-box').style.display = (val === 'custom') ? 'block' : 'none';
+    }
+    
+    // Add event listener to the duration select manually if not caught
+    const durationSelect = document.querySelector('select[name="duration"]');
+    if(durationSelect) {
+        durationSelect.addEventListener('change', (e) => toggleDate(e.target.value));
+    }
+</script>
+{% endblock %}

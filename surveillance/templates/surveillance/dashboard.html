@@ -5,7 +5,7 @@
 
 {% block extra_css %}
 <style>
-    /* 3-Column Grid Layout + Bottom Row */
+    /* 3-Column Grid Layout */
     .dashboard-grid { 
         display: grid; 
         grid-template-columns: 1fr 1.5fr 1fr; 
@@ -55,20 +55,13 @@
     #counter { font-size: 6rem; font-weight: bold; color: #4ecca3; line-height: 1; }
     #label { font-size: 0.75rem; color: #95a5a6; margin-top: 10px; }
 
-    .cyber-input { 
-        width: 100%; background: #1a1a2e; border: 1px solid #0f3460; 
-        color: white; padding: 10px; margin-bottom: 10px; border-radius: 8px; 
-        box-sizing: border-box; font-size: 0.8rem;
+    .btn-nav { 
+        background: #4ecca3; color: #1a1a2e; border: none; 
+        padding: 10px 20px; border-radius: 8px; font-weight: bold; 
+        cursor: pointer; text-decoration: none; display: inline-block;
+        font-size: 0.8rem; margin-top: 15px; transition: 0.3s;
     }
-    .btn-upload { 
-        width: 100%; background: #4ecca3; color: #1a1a2e; border: none; 
-        padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; 
-    }
-
-    .personnel-gallery { grid-column: span 3; }
-    .gallery-wrapper { display: flex; gap: 10px; overflow-x: auto; padding: 10px; }
-    .target-card { min-width: 80px; text-align: center; background: #1a1a2e; padding: 8px; border-radius: 10px; border: 1px solid #0f3460; }
-    .target-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #4ecca3; }
+    .btn-nav:hover { background: #45b791; transform: translateY(-2px); }
 
     @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     .dot { height: 8px; width: 8px; background-color: #4ecca3; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
@@ -79,43 +72,18 @@
 {% block content %}
 <div class="dashboard-grid">
     
-    <div class="panel" style="padding: 20px;">
-        <div class="panel-header">
-            <span><span class="dot"></span> 
-                {% if user.is_staff %}{% trans "SYSTEM ADMINISTRATION" %}{% else %}{% trans "VIEWER ACCESS" %}{% endif %}
-            </span>
+    <div class="panel" style="padding: 20px; text-align: center; justify-content: center;">
+        <div class="panel-header" style="position: absolute; top: 0; width: 100%; left: 0;">
+            <span><span class="dot"></span> {% trans "SYSTEM CONTROL" %}</span>
         </div>
 
+        <h2 style="font-size: 0.8rem; color: #4ecca3;">{% trans "Surveillance Hub" %}</h2>
+        <p style="font-size: 0.7rem; color: #95a5a6;">{% trans "Database and Subject enrollment has been moved to the Management Portal." %}</p>
+        
         {% if user.is_staff %}
-            <h2 style="font-size: 0.7rem; color: #4ecca3; margin-top: 15px;">{% trans "Enroll New Subject" %}</h2>
-<form action="{% url 'upload_target' %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="text" name="name" class="cyber-input" placeholder="{% trans 'Full Name' %}" required>
-    <input type="file" name="image" class="cyber-input" accept="image/*" required>
-    
-    <select name="duration" class="cyber-input" id="duration-select" onchange="toggleCustomDate(this.value)">
-        <option value="none">{% trans "No Expiration" %}</option>
-        <option value="1h">{% trans "1 Hour" %}</option>
-        <option value="12h">{% trans "12 Hours" %}</option>
-        <option value="1d">{% trans "1 Day" %}</option>
-        <option value="7d">{% trans "1 Week" %}</option>
-        <option value="custom">{% trans "Custom Date..." %}</option>
-    </select>
-
-    <input type="datetime-local" name="custom_date" id="custom-date" class="cyber-input" style="display:none;">
-
-    <button type="submit" class="btn-upload">{% trans "Enroll Subject" %}</button>
-</form>
-
-<script>
-    function toggleCustomDate(val) {
-        document.getElementById('custom-date').style.display = (val === 'custom') ? 'block' : 'none';
-    }
-</script>
-        {% else %}
-            <div style="margin-top: 20px; text-align: center; border: 1px dashed #0f3460; padding: 20px; border-radius: 10px;">
-                <p style="font-size: 0.8rem; color: #95a5a6;">{% trans "Access Restricted." %}</p>
-            </div>
+            <a href="{% url 'target_management' %}" class="btn-nav">
+                {% trans "Manage Watchlist" %}
+            </a>
         {% endif %}
     </div>
 
@@ -133,22 +101,26 @@
         <div class="log-container" id="id-log"></div>
     </div>
 
-    <div class="panel" style="grid-column: 1;">
+    <div class="panel" style="grid-row: 2;">
         <div class="panel-header" style="color:#f1c40f;"><span>{% trans "Activity Alerts" %}</span></div>
         <div class="log-container" id="action-log"></div>
     </div>
 
-    <div class="panel personnel-gallery" style="grid-column: 2 / span 2;">
-        <div class="panel-header"><span>{% trans "Watchlist Database" %}</span></div>
-        <div class="gallery-wrapper">
-            {% for person in targets %}
-            <div class="target-card">
-                <img src="{{ person.image.url }}" alt="{{ person.name }}">
-                <div style="font-size: 0.6rem; color: #4ecca3; margin-top: 5px;">{{ person.name }}</div>
+    <div class="panel" style="grid-column: 2 / span 2; grid-row: 2; padding: 20px; justify-content: center;">
+        <div class="panel-header"><span>{% trans "System Integrity" %}</span></div>
+        <div style="display: flex; justify-content: space-around; align-items: center;">
+            <div style="text-align: center;">
+                <div style="color: #4ecca3; font-size: 1.2rem; font-weight: bold;">98%</div>
+                <div style="font-size: 0.6rem; color: #95a5a6;">{% trans "UPTIME" %}</div>
             </div>
-            {% empty %}
-            <div style="font-size: 0.7rem; color: #95a5a6; padding: 10px;">{% trans "Database Empty" %}</div>
-            {% endfor %}
+            <div style="text-align: center;">
+                <div style="color: #4ecca3; font-size: 1.2rem; font-weight: bold;">0.4ms</div>
+                <div style="font-size: 0.6rem; color: #95a5a6;">{% trans "LATENCY" %}</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="color: #4ecca3; font-size: 1.2rem; font-weight: bold;">SSL/WSS</div>
+                <div style="font-size: 0.6rem; color: #95a5a6;">{% trans "ENCRYPTION" %}</div>
+            </div>
         </div>
     </div>
 </div>

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Subject Profile" %}: {{ target.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+    .profile-card { background: #16213e; border-radius: 20px; border: 1px solid #0f3460; overflow: hidden; display: flex; flex-wrap: wrap; }
+    
+    .profile-sidebar { flex: 1; min-width: 300px; background: #0f3460; padding: 30px; text-align: center; }
+    .profile-main { flex: 2; min-width: 400px; padding: 30px; }
+    
+    .big-avatar { width: 200px; height: 200px; border-radius: 15px; object-fit: cover; border: 3px solid #4ecca3; margin-bottom: 20px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    
+    .info-item { margin-bottom: 15px; }
+    .label { color: #95a5a6; font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 5px; }
+    .value { color: #ffffff; font-size: 1rem; font-weight: 500; }
+    
+    .crime-box { background: rgba(231, 76, 60, 0.1); border-left: 4px solid #e74c3c; padding: 15px; margin-top: 20px; border-radius: 4px; }
+    .btn-back { display: inline-block; color: #4ecca3; margin-bottom: 20px; text-decoration: none; font-size: 0.9rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <a href="{% url 'target_management' %}" class="btn-back">← {% trans "Back to Watchlist" %}</a>
+    
+    <div class="profile-card">
+        <div class="profile-sidebar">
+            <img src="{{ target.image.url }}" class="big-avatar">
+            <h2 style="color: #4ecca3; margin: 10px 0;">{{ target.name }} {{ target.last_name }}</h2>
+            <p style="color: #95a5a6;">{{ target.job }}</p>
+            <hr style="border: 0; border-top: 1px solid #1a1a2e; margin: 20px 0;">
+            <div class="info-item">
+                <span class="label">{% trans "Tazkira / ID Number" %}</span>
+                <span class="value" style="font-family: monospace; letter-spacing: 1px;">{{ target.tazkira_number }}</span>
+            </div>
+        </div>
+
+        <div class="profile-main">
+            <h3 style="color: #4ecca3; border-bottom: 1px solid #0f3460; padding-bottom: 10px;">{% trans "Biometric & Personal Records" %}</h3>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">{% trans "Father's Name" %}</span>
+                    <span class="value">{{ target.father_name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">{% trans "Age / Gender" %}</span>
+                    <span class="value">{{ target.age }} / {{ target.get_gender_display }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">{% trans "Marital Status" %}</span>
+                    <span class="value">{{ target.marital_status }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">{% trans "Place of Birth" %}</span>
+                    <span class="value">{{ target.place_of_birth }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">{% trans "Phone Number" %}</span>
+                    <span class="value">{{ target.phone_number }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">{% trans "Authorization Created" %}</span>
+                    <span class="value">{{ target.created_at|date:"M d, Y" }}</span>
+                </div>
+            </div>
+
+            <div class="info-item" style="margin-top: 10px;">
+                <span class="label">{% trans "Current Address" %}</span>
+                <span class="value">{{ target.address }}</span>
+            </div>
+
+            <h3 style="color: #e74c3c; border-bottom: 1px solid #0f3460; padding-bottom: 10px; margin-top: 30px;">{% trans "Criminal Incident Log" %}</h3>
+            <div class="crime-box">
+                <div class="info-item">
+                    <span class="label" style="color: #e74c3c;">{% trans "Primary Offense" %}</span>
+                    <span class="value">{{ target.crime }}</span>
+                </div>
+                <div class="info-item" style="margin-bottom: 0;">
+                    <span class="label">{% trans "Detailed Description" %}</span>
+                    <p style="color: #ecf0f1; font-size: 0.9rem; line-height: 1.5;">{{ target.description|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

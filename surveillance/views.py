@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from django.db import models
 from datetime import timedelta
-from .forms import UserRegistrationForm, LoginForm
+from .forms import UserRegistrationForm, LoginForm,TargetPersonForm
 from .models import TargetPerson
 from django.core.paginator import Paginator 
 
@@ -31,35 +31,91 @@ def home(request):
         'is_admin': is_admin(request.user)
     })
 
+
+@login_required
+@user_passes_test(is_admin, login_url='home')
+def target_management(request):
+    targets = TargetPerson.objects.all().order_by('-id') 
+    return render(request, 'surveillance/target_management.html', {
+        'targets': targets,
+        'is_admin': True
+    })
+
+@login_required
+@user_passes_test(is_admin, login_url='home')
+def target_registration(request):
+    """View to render the full registration page and handle logic"""
+    if request.method == 'POST':
+        # We process the data using the upload_target logic
+        return upload_target(request) 
+    
+    # CRITICAL: You must initialize and pass the form here
+    form = TargetPersonForm() 
+    
+    return render(request, 'surveillance/target_management_registration.html', {
+        'form': form,  # Added this line so your HTML can see the fields
+        'is_admin': True
+    })
+    
+    
+#....... targer person.....
+@login_required
+@user_passes_test(is_admin, login_url='home')
+def target_detail(request, pk):
+    target = get_object_or_404(TargetPerson, pk=pk)
+    return render(request, 'surveillance/target_management_details.html', {
+        'target': target,
+        'is_admin': True
+    })
+
+
 @login_required
 @user_passes_test(is_admin, login_url='home')
 def upload_target(request):
-    if request.method == 'POST' and request.FILES.get('image'):
-        name = request.POST.get('name')
-        image = request.FILES.get('image')
-        duration = request.POST.get('duration')
-        expires_at = None
-        now = timezone.now()
+    if request.method == 'POST':
+        # 1. Initialize the form with POST data and FILES
+        form = TargetPersonForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            # 2. Save the form but don't commit to DB yet so we can add expires_at
+            target = form.save(commit=False)
+            
+            # 3. Handle the Expiration Logic (Duration)
+            duration = request.POST.get('duration')
+            now = timezone.now()
+            durations = {
+                "1h": timedelta(hours=1),
+                "12h": timedelta(hours=12),
+                "1d": timedelta(days=1),
+                "7d": timedelta(days=7),
+            }
 
-        if duration == "1h":
-            expires_at = now + timedelta(hours=1)
-        elif duration == "12h":
-            expires_at = now + timedelta(hours=12)
-        elif duration == "1d":
-            expires_at = now + timedelta(days=1)
-        elif duration == "7d":
-            expires_at = now + timedelta(days=7)
-        elif duration == "custom":
-            custom_date = request.POST.get('custom_date')
-            if custom_date:
-                expires_at = timezone.make_aware(timezone.datetime.fromisoformat(custom_date))
+            if duration in durations:
+                target.expires_at = now + durations[duration]
+            elif duration == "custom":
+                custom_date = request.POST.get('custom_date')
+                if custom_date:
+                    try:
+                        target.expires_at = timezone.make_aware(timezone.datetime.fromisoformat(custom_date))
+                    except ValueError:
+                        pass
+            
+            # 4. Final Save
+            target.save()
+            messages.success(request, f"Subject '{target.name}' successfully enrolled.")
+            return redirect('target_management')
+        else:
+            # If form is invalid, show the specific errors
+            for field, errors in form.errors.items():
+                messages.error(request, f"{field}: {errors[0]}")
+            
+            # Return to registration page with the invalid form to show errors
+            return render(request, 'surveillance/target_management_registration.html', {
+                'form': form,
+                'is_admin': True
+            })
 
-        TargetPerson.objects.create(name=name, image=image, expires_at=expires_at)
-        messages.success(request, f"Target '{name}' authorized successfully.")
-        return redirect('dashboard')
-    
-    messages.error(request, "Failed to upload target.")
-    return redirect('dashboard')
+    return redirect('target_registration')
 
 #...................... Controlling Users By Admin .........................
 
@@ -91,12 +147,12 @@ def account_manage(request):
     else:
         users_list = users_list.order_by(order)
 
-    # Pagination: 6 users per page
+    
     paginator = Paginator(users_list, 6) 
     page_number = request.GET.get('page')
     users = paginator.get_page(page_number)
 
-    # Show "Clear" button only if user filtered or sorted
+
     is_filtered = bool(query or sort_type not in ['-date_joined', 'date_new'])
 
     return render(request, 'surveillance/account_manage.html', {
@@ -148,9 +204,16 @@ def register(request):
             new_user.save()
             messages.success(request, 'Profile Initialized!')
             return redirect("login")
+        else:
+            # If the form is invalid (e.g., username taken), 
+            # we send an error message to the user.
+            messages.error(request, 'Registration failed. Please correct the errors below.')
     else:
         user_form = UserRegistrationForm()
+    
+    # We return the user_form object which now contains the error list
     return render(request, 'registration/register.html', {'user_form': user_form})
+
 
 def login_view(request):
     if request.user.is_authenticated: return redirect('home')
