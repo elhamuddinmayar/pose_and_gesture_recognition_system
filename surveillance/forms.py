@@ -1,10 +1,26 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import TargetPerson
+# IMPORT SecurityProfile from your models
+from .models import TargetPerson, SecurityProfile 
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class':'form-control'}))
     password2 = forms.CharField(label='Repeat password', widget=forms.PasswordInput(attrs={'class':'form-control'}))
+    
+    # Extra fields for SecurityProfile
+    badge_number = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+    profile_picture = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class':'form-control'}))
+    
+    # Use a local definition if the model isn't loading fast enough to avoid NameError
+    role = forms.ChoiceField(
+        choices=[
+            ('operator', 'Surveillance Operator'),
+            ('supervisor', 'Shift Supervisor'),
+            ('admin', 'System Administrator'),
+        ], 
+        widget=forms.Select(attrs={'class':'form-control'})
+    )
+    emergency_contact = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 
     class Meta:
         model = User
@@ -23,11 +39,12 @@ class UserRegistrationForm(forms.ModelForm):
                 raise forms.ValidationError('Passwords don\'t match.')
         return cd['password2']
 
+    # Recommended: Also clean the email to check for duplicates
     def clean_email(self):
-        data = self.cleaned_data.get('email')
-        if User.objects.filter(email=data).exists():
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
             raise forms.ValidationError('Email already in use.')
-        return data
+        return email
 
 class LoginForm(forms.Form):
     identifier = forms.CharField(
@@ -37,11 +54,9 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
     )
 
-# --- New Form for Target Enrollment ---
 class TargetPersonForm(forms.ModelForm):
     class Meta:
         model = TargetPerson
-        # These fields match your Model exactly
         fields = [
             'name', 'last_name', 'father_name', 'image',
             'age', 'gender', 'place_of_birth', 'marital_status', 'job',
@@ -49,7 +64,6 @@ class TargetPersonForm(forms.ModelForm):
             'crime', 'description'
         ]
         
-        # We define widgets to ensure the styling matches your "Cyber" theme
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'First Name'}),
             'last_name': forms.TextInput(attrs={'placeholder': 'Surname'}),
@@ -63,6 +77,23 @@ class TargetPersonForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # This loop automatically adds your CSS class to every field
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'cyber-input'})
+            
+            
+            
+class UserUpdateForm(forms.ModelForm):
+    # Profile fields
+    badge_number = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+    role = forms.ChoiceField(choices=SecurityProfile.ROLE_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
+    emergency_contact = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+    profile_picture = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class':'form-control'}))
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class':'form-control'}),
+            'last_name': forms.TextInput(attrs={'class':'form-control'}),
+            'email': forms.EmailInput(attrs={'class':'form-control'}),
+        }

@@ -1,30 +1,48 @@
 from django.db import models
 from django.utils import timezone
 import os
+from django.db import models
+from django.contrib.auth.models import User
 
+class SecurityProfile(models.Model):
+    ROLE_CHOICES = [
+        ('operator', 'Surveillance Operator'),
+        ('supervisor', 'Shift Supervisor'),
+        ('admin', 'System Administrator'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    profile_picture = models.ImageField(upload_to='profiles/security/', default='profiles/default.png')
+    badge_number = models.CharField(max_length=20, unique=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='operator')
+    emergency_contact = models.CharField(max_length=100)
+    is_on_duty = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.badge_number} - {self.user.username}"
+    
+    
 class TargetPerson(models.Model):
-    # Gender Choices
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
         ('O', 'Other'),
     ]
 
-    # Marital Status Choices
     MARITAL_CHOICES = [
         ('Single', 'Single'),
         ('Married', 'Married'),
         ('Divorced', 'Divorced'),
         ('Widowed', 'Widowed'),
     ]
-
-    # --- Basic Biometrics ---
+    
+    #Basic Biometrics 
     name = models.CharField(max_length=100) # First Name
     last_name = models.CharField(max_length=100, default='N/A')
     father_name = models.CharField(max_length=100, default='N/A')
     image = models.ImageField(upload_to='targets/')
     
-    # --- Personal Details ---
+    #Personal Details 
     # Note: IntegerFields use numbers, not strings
     age = models.IntegerField(default=0) 
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')

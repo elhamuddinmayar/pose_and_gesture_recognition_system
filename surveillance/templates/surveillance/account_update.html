@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 50px auto;
+        background: var(--panel);
+        border: 2px solid var(--accent); /* Blue border to indicate "Edit Mode" */
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 25px rgba(0, 188, 212, 0.2);
+    }
+    .profile-header {
+        background: linear-gradient(135deg, #0f3460, #16213e);
+        padding: 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+    }
+    .profile-pic {
+        width: 150px; height: 150px;
+        border-radius: 50%;
+        border: 4px solid var(--accent);
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 40px;
+        gap: 30px;
+    }
+    
+    /* Label styling matches your detail page */
+    .info-item label { 
+        color: var(--accent); 
+        font-size: 0.8rem; 
+        text-transform: uppercase; 
+        display: block; 
+        margin-bottom: 8px; 
+        font-weight: bold;
+    }
+
+    /* Cyber-styled Inputs */
+    .admin-input {
+        background: rgba(15, 52, 96, 0.5);
+        border: 1px solid var(--border);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        width: 100%;
+        outline: none;
+        font-size: 1rem;
+        transition: 0.3s;
+    }
+    .admin-input:focus {
+        border-color: var(--accent);
+        background: rgba(15, 52, 96, 0.8);
+        box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+    }
+
+    .action-footer {
+        padding: 30px;
+        text-align: center;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        background: rgba(0,0,0,0.2);
+    }
+
+    .btn-save { 
+        background: var(--accent); 
+        color: var(--bg); 
+        border: none;
+        padding: 10px 30px; 
+        border-radius: 8px; 
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+    }
+    .btn-cancel { 
+        background: var(--border); 
+        color: white; 
+        text-decoration: none; 
+        padding: 10px 30px; 
+        border-radius: 8px; 
+        display: inline-block;
+        font-weight: bold;
+    }
+    .error-msg { color: #ff4d4d; font-size: 0.8rem; margin-top: 4px; }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <img src="{{ profile.profile_picture.url }}" class="profile-pic">
+        <h1 style="color: white; margin: 0;">{{ target_user.get_full_name }}</h1>
+        <p style="color: var(--accent);">{% trans "Editing" %}: @{{ target_user.username }}</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <label for="id_badge_number">{% trans "Badge Number" %}</label>
+                <input type="text" name="badge_number" id="id_badge_number" 
+                       value="{{ form.badge_number.value|default:profile.badge_number }}" class="admin-input">
+                {% if form.badge_number.errors %}<div class="error-msg">{{ form.badge_number.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="info-item">
+                <label for="id_role">{% trans "Role" %}</label>
+                <select name="role" id="id_role" class="admin-input">
+                    {% for val, label in form.fields.role.choices %}
+                        <option value="{{ val }}" {% if form.role.value == val or profile.role == val %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="info-item">
+                <label for="id_email">{% trans "Email Address" %}</label>
+                <input type="email" name="email" id="id_email" 
+                       value="{{ form.email.value|default:target_user.email }}" class="admin-input">
+            </div>
+
+            <div class="info-item">
+                <label for="id_emergency_contact">{% trans "Emergency Contact" %}</label>
+                <input type="text" name="emergency_contact" id="id_emergency_contact" 
+                       value="{{ form.emergency_contact.value|default:profile.emergency_contact }}" class="admin-input">
+            </div>
+
+
+            <div class="info-item">
+                <label>{% trans "Update Photo" %}</label>
+                <input type="file" name="profile_picture" class="admin-input" style="padding: 8px;">
+            </div>
+        </div>
+
+        <div class="action-footer">
+            <button type="submit" class="btn-save">
+                {% trans "Save Changes" %}
+            </button>
+            
+            <a href="{% url 'account_detail' target_user.id %}" class="btn-cancel">
+                {% trans "Cancel" %}
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

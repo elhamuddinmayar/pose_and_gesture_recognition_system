@@ -105,7 +105,11 @@
             </select>
 
             {% if user.is_authenticated %}
-                <span class="user-tag">{{ user.username }}</span>
+                <a href="{% url 'account_detail' user.id %}" style="text-decoration: none;">
+                    <span class="user-tag">
+                        👤 {{ user.username }}
+                    </span>
+                </a>
                 <a href="{% url 'logout' %}" class="nav-item" style="font-size: 0.7rem;">{% trans "Logout" %}</a>
             {% endif %}
         </div>

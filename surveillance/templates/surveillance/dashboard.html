@@ -80,7 +80,7 @@
         <h2 style="font-size: 0.8rem; color: #4ecca3;">{% trans "Surveillance Hub" %}</h2>
         <p style="font-size: 0.7rem; color: #95a5a6;">{% trans "Database and Subject enrollment has been moved to the Management Portal." %}</p>
         
-        {% if user.is_staff %}
+        {% if is_admin or user.profile.role == 'supervisor' %}
             <a href="{% url 'target_management' %}" class="btn-nav">
                 {% trans "Manage Watchlist" %}
             </a>

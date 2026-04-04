@@ -10,7 +10,7 @@ from deepface import DeepFace
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-# --- EXACT PATHS PROVIDED ---
+#the deepface address that has been localize in project 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 YOLO_PATH = os.path.join(BASE_DIR, 'surveillance', 'models', 'yolo11n_models', 'yolo11n-pose.pt')
 DEEPFACE_MODELS = os.path.join(BASE_DIR, 'surveillance', 'models')

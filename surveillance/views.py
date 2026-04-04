@@ -6,13 +6,22 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from django.db import models
 from datetime import timedelta
-from .forms import UserRegistrationForm, LoginForm,TargetPersonForm
-from .models import TargetPerson
 from django.core.paginator import Paginator 
+from django.core.exceptions import PermissionDenied
+from django.utils.translation import gettext as _ # Added for the _() function
+from django.contrib.admin.views.decorators import staff_member_required # Added this
+
+# Note: SecurityProfile is a MODEL, not a form. Remove it from your .forms import line
+from .forms import UserRegistrationForm, LoginForm, TargetPersonForm, UserUpdateForm
+from .models import TargetPerson, SecurityProfile
+
 
 # Helper to check if user has admin privileges
 def is_admin(user):
-    return user.is_authenticated and (user.is_superuser or user.groups.filter(name='Admin').exists())
+    if not user.is_authenticated:
+        return False
+    # Check if they are a Django Superuser OR if their profile role is 'admin'
+    return user.is_superuser or user.profile.role == 'admin'
 
 @login_required
 def dashboard(request):
@@ -31,9 +40,11 @@ def home(request):
         'is_admin': is_admin(request.user)
     })
 
+def is_privileged_staff(user):
+    return user.is_authenticated and (user.profile.role in ['admin', 'supervisor'] or user.is_superuser)
 
 @login_required
-@user_passes_test(is_admin, login_url='home')
+@user_passes_test(is_privileged_staff, login_url='home')
 def target_management(request):
     targets = TargetPerson.objects.all().order_by('-id') 
     return render(request, 'surveillance/target_management.html', {
@@ -42,7 +53,7 @@ def target_management(request):
     })
 
 @login_required
-@user_passes_test(is_admin, login_url='home')
+@user_passes_test(is_privileged_staff, login_url='home')
 def target_registration(request):
     """View to render the full registration page and handle logic"""
     if request.method == 'POST':
@@ -59,8 +70,10 @@ def target_registration(request):
     
     
 #....... targer person.....
+
+#target person details 
 @login_required
-@user_passes_test(is_admin, login_url='home')
+@user_passes_test(is_admin, login_url='target_management')
 def target_detail(request, pk):
     target = get_object_or_404(TargetPerson, pk=pk)
     return render(request, 'surveillance/target_management_details.html', {
@@ -68,9 +81,9 @@ def target_detail(request, pk):
         'is_admin': True
     })
 
-
+#uploading ther target person info to system 
 @login_required
-@user_passes_test(is_admin, login_url='home')
+@user_passes_test(is_privileged_staff, login_url='home')
 def upload_target(request):
     if request.method == 'POST':
         # 1. Initialize the form with POST data and FILES
@@ -118,27 +131,32 @@ def upload_target(request):
     return redirect('target_registration')
 
 #...................... Controlling Users By Admin .........................
-
 @login_required
 @user_passes_test(is_admin, login_url='home')
 def account_manage(request):
     query = request.GET.get('q', '')
     sort_type = request.GET.get('sort', '-date_joined')
 
-    # Base Queryset
-    users_list = User.objects.filter(
+    # Base Queryset - Added select_related for performance when sorting by profile roles
+    users_list = User.objects.select_related('profile').filter(
         models.Q(username__icontains=query) | 
         models.Q(email__icontains=query)
     )
 
-    # Sorting Logic (Optimized)
+    # Sorting Logic (Old rules preserved + New Rank properties added)
     sort_map = {
+        # --- Original Rules ---
         'name_asc': 'username',
         'name_desc': '-username',
         'date_old': 'date_joined',
         'date_new': '-date_joined',
         'rank_admin': ['-is_staff', 'username'],
         'rank_obs': ['is_staff', 'username'],
+        
+        # --- New Tactical Rank Properties ---
+        # Sorts by the 'role' field in your SecurityProfile model
+        'role_supervisor': ['-profile__role', 'username'], # Supervisors usually sort to top alphabetically
+        'role_operator': ['profile__role', 'username'],   # Operators sort to bottom/top based on string
     }
     
     order = sort_map.get(sort_type, '-date_joined')
@@ -147,11 +165,10 @@ def account_manage(request):
     else:
         users_list = users_list.order_by(order)
 
-    
+    # Pagination
     paginator = Paginator(users_list, 6) 
     page_number = request.GET.get('page')
     users = paginator.get_page(page_number)
-
 
     is_filtered = bool(query or sort_type not in ['-date_joined', 'date_new'])
 
@@ -162,7 +179,9 @@ def account_manage(request):
         'is_admin': True,
         'is_filtered': is_filtered
     })
-
+    
+        
+#deletation of system users
 @login_required
 @user_passes_test(is_admin, login_url='home')
 def delete_user(request, user_id):
@@ -176,6 +195,8 @@ def delete_user(request, user_id):
     messages.success(request, f"User '{username}' has been removed from the system.")
     return redirect('account_manage')
 
+
+#handle user role like admin or sub admin
 @login_required
 @user_passes_test(is_admin, login_url='home')
 def toggle_admin_role(request, user_id):
@@ -194,27 +215,33 @@ def toggle_admin_role(request, user_id):
     user_to_mod.save()
     return redirect('account_manage')
 
-# --- Auth Views ---
+
+#................   Auth system control part................
+#User registration 
 def register(request):
     if request.method == 'POST':
-        user_form = UserRegistrationForm(request.POST)
+        user_form = UserRegistrationForm(request.POST, request.FILES) 
         if user_form.is_valid():
             new_user = user_form.save(commit=False)
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.save()
-            messages.success(request, 'Profile Initialized!')
+
+            # Link the profile
+            SecurityProfile.objects.create(
+                user=new_user,
+                badge_number=user_form.cleaned_data['badge_number'],
+                profile_picture=user_form.cleaned_data.get('profile_picture'),
+                role=user_form.cleaned_data['role'],
+                emergency_contact=user_form.cleaned_data['emergency_contact']
+            )
+
+            messages.success(request, f'Security Profile for {new_user.username} Initialized!')
             return redirect("login")
-        else:
-            # If the form is invalid (e.g., username taken), 
-            # we send an error message to the user.
-            messages.error(request, 'Registration failed. Please correct the errors below.')
     else:
         user_form = UserRegistrationForm()
     
-    # We return the user_form object which now contains the error list
     return render(request, 'registration/register.html', {'user_form': user_form})
-
-
+#user login
 def login_view(request):
     if request.user.is_authenticated: return redirect('home')
     if request.method == 'POST':
@@ -234,8 +261,60 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, 'registration/login.html', {'form': form})
-
+#user log out
 def log_out_view(request):
     logout(request)
     messages.info(request, "Session Terminated.")
     return redirect("login")
+
+
+@login_required
+def account_detail(request, user_id):
+    # Fetch the user being requested
+    target_user = get_object_or_404(User, id=user_id)
+    
+    # Logic: Only Admin can see others. Non-admins can ONLY see their own ID.
+    if not request.user.is_superuser and request.user.id != target_user.id:
+        raise PermissionDenied("You do not have permission to view this profile.")
+
+    return render(request, 'surveillance/account_manage_details.html', {
+        'target_user': target_user,
+        'profile': target_user.profile # Accessing the SecurityProfile model
+    })
+    
+# views.py
+
+@staff_member_required
+def account_update(request, pk):
+    target_user = get_object_or_404(User, id=pk)
+    profile = target_user.profile
+
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, request.FILES, instance=target_user)
+        if form.is_valid():
+            form.save()
+            
+            profile.badge_number = form.cleaned_data['badge_number']
+            profile.role = form.cleaned_data['role']
+            profile.emergency_contact = form.cleaned_data['emergency_contact']
+            
+            if form.cleaned_data.get('profile_picture'):
+                profile.profile_picture = form.cleaned_data['profile_picture']
+            
+            profile.save()
+            messages.success(request, _("Profile updated successfully."))
+            return redirect('account_detail', user_id=target_user.id)
+    else:
+        initial_data = {
+            'badge_number': profile.badge_number,
+            'role': profile.role,
+            'emergency_contact': profile.emergency_contact,
+        }
+        form = UserUpdateForm(instance=target_user, initial=initial_data)
+
+    # Add 'profile': profile to the dictionary below:
+    return render(request, 'surveillance/account_update.html', {
+        'form': form, 
+        'target_user': target_user, 
+        'profile': profile  # <--- THIS IS THE MISSING KEY
+    })

@@ -1,6 +1,8 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
+
+#websock connection for continouse process
 class PoseConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # Join the global surveillance group
