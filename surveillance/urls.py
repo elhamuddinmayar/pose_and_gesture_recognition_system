@@ -1,26 +1,38 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
+    # Core pages
     path('', views.home, name='home'),
-    path('dashboard/', views.dashboard, name='dashboard'), 
-    path('upload-target/', views.upload_target, name='upload_target'),
-    path('management/register/', views.target_registration, name='target_registration'),
-    path('management/targets/', views.target_management, name='target_management'),
-    path('target/<int:pk>/', views.target_detail, name='target_detail'),   
-    path("register/", views.register, name="register"),
-    #account management URLS
-    path("login/", views.login_view, name="login"),
-    path("logout/", views.log_out_view, name="logout"),
-    path('accounts/manage/', views.account_manage, name='account_manage'),
-    path('accounts/manage/<int:user_id>/', views.account_detail, name='account_detail'),
-    path('accounts/delete/<int:user_id>/', views.delete_user, name='delete_user'),
-    path('profile/update/<int:pk>/', views.account_update, name='update_profile'),
-    path('accounts/toggle-role/<int:user_id>/', views.toggle_admin_role, name='toggle_admin_role'),
-    # Password Reset URLs
-    path('password-reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),   
+    path('dashboard/', views.dashboard, name='dashboard'),
+
+    # Auth
+    path('register/', views.register, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.log_out_view, name='logout'),
+
+    # Target management
+    path('targets/', views.target_management, name='target_management'),
+    path('targets/register/', views.target_registration, name='target_registration'),
+    path('targets/<int:pk>/', views.target_detail, name='target_detail'),
+
+    # Assignment
+    path('targets/<int:target_pk>/assign/', views.assign_target, name='assign_target'),
+    path('assignments/', views.operator_assignments, name='operator_assignments'),
+    path('assignments/<int:assignment_pk>/acknowledge/', views.acknowledge_assignment, name='acknowledge_assignment'),
+    path('assignments/<int:assignment_pk>/pass-back/', views.pass_back_target, name='pass_back_target'),
+
+    # Detection history
+    path('history/', views.detection_history, name='detection_history'),
+
+    # Notifications
+    path('notifications/', views.notifications_list, name='notifications_list'),
+    path('notifications/count/', views.unread_notification_count, name='unread_notification_count'),
+
+    # Account management
+    path('accounts/', views.account_manage, name='account_manage'),
+    path('accounts/<int:user_id>/', views.account_detail, name='account_detail'),
+    path('accounts/<int:pk>/update/', views.account_update, name='account_update'),
+    path('accounts/<int:user_id>/delete/', views.delete_user, name='delete_user'),
+    path('accounts/<int:user_id>/toggle-role/', views.toggle_admin_role, name='toggle_admin_role'),
 ]

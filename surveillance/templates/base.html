@@ -91,7 +91,11 @@
         <div class="nav-links">
             <a href="{% url 'home' %}" class="nav-item" style="font-weight: bold; color: var(--accent);">BUTTERFLY</a>
             <a href="{% url 'dashboard' %}" class="nav-item">{% trans "Dashboard" %}</a>
-            <a href="{% url 'account_manage' %}" class="nav-item">{% trans "Accounts" %}</a>
+            {% if user.is_authenticated and user.profile.role == 'admin' or user.is_superuser %}
+                <a href="{% url 'account_manage' %}" class="nav-item">
+                    <i class="fas fa-users-cog"></i> {% trans "Accounts" %}
+                </a>
+            {% endif %}
         </div>
 
         <div class="nav-links">

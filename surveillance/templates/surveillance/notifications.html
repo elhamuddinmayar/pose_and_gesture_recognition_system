@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Notifications" %}{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 30px auto; padding: 0 15px;">
+    <h2 style="color: #4ecca3; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">
+        <i class="fas fa-bell"></i> {% trans "Notifications" %}
+    </h2>
+
+    {% for notif in notifications %}
+    <div style="
+        background: #16213e;
+        border: 1px solid {% if notif.notification_type == 'assignment' %}#4ecca3{% elif notif.notification_type == 'pass_back' %}#f1c40f{% elif notif.notification_type == 'detection' %}#ff4d4d{% else %}#0f3460{% endif %};
+        border-radius: 10px; padding: 16px 20px; margin-bottom: 12px;">
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <div style="font-weight: bold; color:
+                    {% if notif.notification_type == 'assignment' %}#4ecca3
+                    {% elif notif.notification_type == 'pass_back' %}#f1c40f
+                    {% elif notif.notification_type == 'detection' %}#ff4d4d
+                    {% else %}#eee{% endif %};
+                    font-size: 0.9rem; margin-bottom: 6px;">
+                    {{ notif.title }}
+                </div>
+                <div style="font-size: 0.8rem; color: #ccc; white-space: pre-line;">{{ notif.message }}</div>
+            </div>
+            <div style="font-size: 0.7rem; color: #4a5568; white-space: nowrap; margin-left: 16px; text-align: {% if LANGUAGE_BIDI %}left{% else %}right{% endif %};">
+                {{ notif.created_at|date:"d M H:i" }}
+            </div>
+        </div>
+
+        {% if notif.related_assignment %}
+        <div style="margin-top: 10px;">
+            <a href="{% url 'operator_assignments' %}"
+               style="font-size:0.75rem; color:#4ecca3; text-decoration:none; border:1px solid #4ecca3; padding:4px 12px; border-radius:6px;">
+                {% trans "View Assignment" %} →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div style="text-align: center; color: #4a5568; padding: 60px 0; font-size: 0.85rem;">
+        <i class="fas fa-bell-slash" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+        {% trans "No notifications yet." %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

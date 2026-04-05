@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Detection History" %}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 30px auto; padding: 0 15px;">
+    <h2 style="color: #4ecca3; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">
+        <i class="fas fa-history"></i> {% trans "Detection History" %}
+    </h2>
+
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+        <thead>
+            <tr style="background: #0f3460; color: #4ecca3; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px;">
+                <th style="padding: 10px 12px; text-align: {% if LANGUAGE_BIDI %}right{% else %}left{% endif %};">{% trans "Time" %}</th>
+                <th style="padding: 10px 12px; text-align: center;">{% trans "Count" %}</th>
+                <th style="padding: 10px 12px; text-align: center;">{% trans "Action" %}</th>
+                <th style="padding: 10px 12px; text-align: {% if LANGUAGE_BIDI %}right{% else %}left{% endif %};">{% trans "Matched Target" %}</th>
+                <th style="padding: 10px 12px; text-align: center;">{% trans "Snapshot" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event in page_obj %}
+            <tr style="background: {% cycle '#16213e' '#1a2540' %}; border-bottom: 1px solid #0f3460;">
+                <td style="padding: 10px 12px; color: #95a5a6;">{{ event.timestamp|date:"d M Y H:i:s" }}</td>
+                <td style="padding: 10px 12px; text-align: center; color: {% if event.person_count > 0 %}#4ecca3{% else %}#4a5568{% endif %}; font-weight: bold;">
+                    {{ event.person_count }}
+                </td>
+                <td style="padding: 10px 12px; text-align: center;">
+                    {% if event.action == 'FALL DETECTED' %}
+                        <span style="background:#7b1113; color:#ff4d4d; padding:3px 8px; border-radius:4px; font-size:0.7rem;">{% trans "FALL" %}</span>
+                    {% elif event.action == 'HAND WAVING' %}
+                        <span style="background:#3d3d00; color:#f1c40f; padding:3px 8px; border-radius:4px; font-size:0.7rem;">{% trans "WAVE" %}</span>
+                    {% else %}
+                        <span style="color:#4a5568;">—</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 10px 12px;">
+                    {% if event.matched_target_name %}
+                        <span style="color:#4ecca3; font-weight:bold;">{{ event.matched_target_name }}</span>
+                    {% else %}
+                        <span style="color:#4a5568;">—</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 10px 12px; text-align: center;">
+                    {% if event.frame_snapshot %}
+                        <a href="{{ event.frame_snapshot.url }}" target="_blank">
+                            <img src="{{ event.frame_snapshot.url }}"
+                                 style="width:48px; height:36px; object-fit:cover; border-radius:4px; border:1px solid #0f3460;">
+                        </a>
+                    {% else %}
+                        <span style="color:#4a5568;">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #4a5568;">
+                    {% trans "No detection events recorded yet." %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 20px;">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" style="padding:6px 14px; background:#0f3460; color:#4ecca3; border-radius:6px; text-decoration:none; font-size:0.8rem;">‹</a>
+        {% endif %}
+        <span style="padding:6px 14px; color:#95a5a6; font-size:0.8rem;">
+            {% trans "Page" %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" style="padding:6px 14px; background:#0f3460; color:#4ecca3; border-radius:6px; text-decoration:none; font-size:0.8rem;">›</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

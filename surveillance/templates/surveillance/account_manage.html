@@ -165,19 +165,19 @@
                 <button type="submit" style="background:transparent; border:none; color:var(--accent); cursor: pointer;">🔍</button>
             </div>
 
-            <select name="sort" class="sort-select" onchange="this.form.submit()">
-                <option value="date_new" {% if current_sort == 'date_new' %}selected{% endif %}>{% trans "Recently Joined" %}</option>
-                <option value="date_old" {% if current_sort == 'date_old' %}selected{% endif %}>{% trans "Oldest Members" %}</option>
-                
-                <option value="name_asc" {% if current_sort == 'name_asc' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
-                <option value="name_desc" {% if current_sort == 'name_desc' %}selected{% endif %}>{% trans "Name (Z-A)" %}</option>
-                
-                <option value="rank_admin" {% if current_sort == 'rank_admin' %}selected{% endif %}>{% trans "Rank: Admins First" %}</option>
-                <option value="rank_obs" {% if current_sort == 'rank_obs' %}selected{% endif %}>{% trans "Rank: Observers First" %}</option>
+           <select name="sort" class="sort-select" onchange="this.form.submit()">
+            <option value="date_new" {% if current_sort == 'date_new' %}selected{% endif %}>{% trans "Recently Joined" %}</option>
+            <option value="date_old" {% if current_sort == 'date_old' %}selected{% endif %}>{% trans "Oldest Members" %}</option>
+            
+            <option value="name_asc" {% if current_sort == 'name_asc' %}selected{% endif %}>{% trans "Name (A-Z)" %}</option>
+            <option value="name_desc" {% if current_sort == 'name_desc' %}selected{% endif %}>{% trans "Name (Z-A)" %}</option>
+            
+            <option value="rank_admin" {% if current_sort == 'rank_admin' %}selected{% endif %}>{% trans "Rank: Admins First" %}</option>
+            <option value="rank_obs" {% if current_sort == 'rank_obs' %}selected{% endif %}>{% trans "Rank: Observers First" %}</option>
 
-                <option value="role_supervisor" {% if current_sort == 'role_supervisor' %}selected{% endif %}>{% trans "Role: Supervisors First" %}</option>
-                <option value="role_operator" {% if current_sort == 'role_operator' %}selected{% endif %}>{% trans "Role: Operators First" %}</option>
-            </select>
+            <option value="role_supervisor" {% if current_sort == 'role_supervisor' %}selected{% endif %}>{% trans "Role: Supervisors First" %}</option>
+            <option value="role_operator" {% if current_sort == 'role_operator' %}selected{% endif %}>{% trans "Role: Operators First" %}</option>
+        </select>
             {% if is_filtered %}
             <a href="{% url 'account_manage' %}" style="color: var(--danger); text-decoration: none; font-size: 0.75rem; border-bottom: 1px solid var(--danger); white-space: nowrap;">
                 ✕ {% trans "RESET" %}

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "My Assignments" %}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 30px auto; padding: 0 15px;">
+    <h2 style="color: #4ecca3; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">
+        <i class="fas fa-tasks"></i> {% trans "My Assigned Targets" %}
+    </h2>
+
+    {% if assignments %}
+        {% for assignment in assignments %}
+        <div style="background: #16213e; border: 1px solid #0f3460; border-radius: 12px; padding: 20px; margin-bottom: 16px; position: relative;">
+
+            <!-- Status badge -->
+            <span style="
+                position: absolute; top: 16px;
+                {% if LANGUAGE_BIDI %}left: 16px;{% else %}right: 16px;{% endif %}
+                padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;
+                {% if assignment.status == 'pending' %}background:#3d3d00; color:#f1c40f;
+                {% elif assignment.status == 'acknowledged' %}background:#0f3460; color:#4ecca3;
+                {% elif assignment.status == 'passed_back' %}background:#2d1f00; color:#f1c40f;
+                {% else %}background:#1a2540; color:#95a5a6;{% endif %}
+            ">{{ assignment.get_status_display }}</span>
+
+            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                <!-- Target photo -->
+                {% if assignment.target.image %}
+                <img src="{{ assignment.target.image.url }}"
+                     style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; border: 2px solid #0f3460;">
+                {% endif %}
+
+                <!-- Target info -->
+                <div style="flex-grow: 1;">
+                    <div style="font-size: 1rem; font-weight: bold; color: #eee;">
+                        {{ assignment.target.name }} {{ assignment.target.last_name }}
+                    </div>
+                    <div style="font-size: 0.75rem; color: #95a5a6; margin-top: 4px;">
+                        {% trans "Crime" %}: {{ assignment.target.crime }} &nbsp;·&nbsp;
+                        {% trans "Age" %}: {{ assignment.target.age }} &nbsp;·&nbsp;
+                        {% trans "Assigned by" %}: {{ assignment.assigned_by.username }}
+                    </div>
+                    {% if assignment.note %}
+                    <div style="font-size: 0.75rem; color: #f1c40f; margin-top: 6px;">
+                        <i class="fas fa-sticky-note"></i> {{ assignment.note }}
+                    </div>
+                    {% endif %}
+                    <div style="font-size: 0.7rem; color: #4a5568; margin-top: 4px;">
+                        {{ assignment.created_at|date:"d M Y H:i" }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                {% if assignment.status == 'pending' %}
+                <button onclick="acknowledge({{ assignment.pk }}, this)"
+                    style="background:#0f3460; color:#4ecca3; border:1px solid #4ecca3; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.8rem;">
+                    <i class="fas fa-check"></i> {% trans "Acknowledge" %}
+                </button>
+                {% endif %}
+
+                {% if assignment.status != 'passed_back' and assignment.status != 'closed' %}
+                <form method="post" action="{% url 'pass_back_target' assignment.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit"
+                        style="background:#3d3d00; color:#f1c40f; border:1px solid #f1c40f; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.8rem;"
+                        onclick="return confirm('{% trans "Pass this target back to the original uploader?" %}')">
+                        <i class="fas fa-reply"></i> {% trans "Pass Back to Uploader" %}
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; color: #4a5568; padding: 60px 0; font-size: 0.85rem;">
+            <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+            {% trans "No targets currently assigned to you." %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function acknowledge(assignmentPk, btn) {
+    fetch(`/assignments/${assignmentPk}/acknowledge/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            btn.textContent = '✓ Acknowledged';
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+        }
+    });
+}
+</script>
+{% endblock %}

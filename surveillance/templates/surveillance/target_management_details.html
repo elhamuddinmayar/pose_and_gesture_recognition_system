@@ -20,6 +20,108 @@
     
     .crime-box { background: rgba(231, 76, 60, 0.1); border-left: 4px solid #e74c3c; padding: 15px; margin-top: 20px; border-radius: 4px; }
     .btn-back { display: inline-block; color: #4ecca3; margin-bottom: 20px; text-decoration: none; font-size: 0.9rem; }
+
+    /* Assignment section */
+    .assign-section {
+        background: #16213e;
+        border: 1px solid #0f3460;
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 28px;
+    }
+    .assign-section h3 {
+        color: #4ecca3;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin: 0 0 18px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #0f3460;
+    }
+    .assign-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr auto;
+        gap: 12px;
+        align-items: end;
+    }
+    .assign-form-grid label {
+        color: #95a5a6;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+    .assign-select,
+    .assign-input {
+        width: 100%;
+        background: #0f3460;
+        border: 1px solid #1a3a60;
+        color: #eee;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+    }
+    .assign-select:focus,
+    .assign-input:focus { border-color: #4ecca3; }
+    .assign-input::placeholder { color: #4a5568; }
+    .btn-assign {
+        background: #4ecca3;
+        color: #1a1a2e;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 0.82rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+    .btn-assign:hover { background: #45b791; transform: translateY(-1px); }
+
+    /* Assignment history table */
+    .assign-history { margin-top: 20px; }
+    .assign-history-title {
+        color: #95a5a6;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+    .assign-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 0.8rem;
+        background: #0f2040;
+        border: 1px solid #0f3460;
+    }
+    .assign-row .assign-operator { color: #eee; font-weight: bold; }
+    .assign-row .assign-by { color: #95a5a6; font-size: 0.72rem; }
+    .assign-row .assign-date { color: #4a5568; font-size: 0.72rem; white-space: nowrap; }
+    .status-badge {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.68rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .status-pending     { background: #3d3d00; color: #f1c40f; }
+    .status-acknowledged { background: #0a2a1a; color: #4ecca3; }
+    .status-passed_back { background: #2d1f00; color: #f1c40f; }
+    .status-closed      { background: #1a2540; color: #4a5568; }
+
+    @media (max-width: 640px) {
+        .assign-form-grid { grid-template-columns: 1fr; }
+    }
 </style>
 {% endblock %}
 
@@ -37,6 +139,18 @@
                 <span class="label">{% trans "Tazkira / ID Number" %}</span>
                 <span class="value" style="font-family: monospace; letter-spacing: 1px;">{{ target.tazkira_number }}</span>
             </div>
+            {% if target.uploaded_by %}
+            <div class="info-item" style="margin-top: 12px;">
+                <span class="label">{% trans "Enrolled By" %}</span>
+                <span class="value" style="color: #4ecca3; font-size: 0.85rem;">
+                    <i class="fas fa-user-shield" style="margin-right: 4px;"></i>
+                    {{ target.uploaded_by.username }}
+                </span>
+                <span style="display: block; color: #4a5568; font-size: 0.7rem; margin-top: 2px;">
+                    {{ target.uploaded_by.profile.get_role_display }}
+                </span>
+            </div>
+            {% endif %}
         </div>
 
         <div class="profile-main">
@@ -87,5 +201,72 @@
             </div>
         </div>
     </div>
+
+    <!-- ================================================================ -->
+    <!-- Assignment section — visible to admin and supervisors only        -->
+    <!-- ================================================================ -->
+    {% if is_admin or user.profile.role == 'supervisor' %}
+    <div class="assign-section">
+        <h3><i class="fas fa-user-tag" style="margin-right: 8px;"></i>{% trans "Assign Target to Operator" %}</h3>
+
+        {% if operators %}
+        <form method="post" action="{% url 'assign_target' target.pk %}">
+            {% csrf_token %}
+            <div class="assign-form-grid">
+                <div>
+                    <label for="operator_id">{% trans "Select Operator" %}</label>
+                    <select name="operator_id" id="operator_id" class="assign-select" required>
+                        <option value="" disabled selected>— {% trans "Choose operator" %} —</option>
+                        {% for op in operators %}
+                            <option value="{{ op.pk }}">{{ op.username }} ({{ op.profile.badge_number }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="note">{% trans "Note / Instructions" %}</label>
+                    <input type="text" name="note" id="note" class="assign-input"
+                           placeholder="{% trans 'e.g. Monitor gate 3, report immediately on sighting' %}">
+                </div>
+                <div>
+                    <button type="submit" class="btn-assign">
+                        <i class="fas fa-paper-plane" style="margin-right: 6px;"></i>{% trans "Assign" %}
+                    </button>
+                </div>
+            </div>
+        </form>
+        {% else %}
+        <p style="color: #4a5568; font-size: 0.82rem;">
+            {% trans "No operators are currently registered in the system." %}
+        </p>
+        {% endif %}
+
+        <!-- Assignment history for this target -->
+        {% if assignments %}
+        <div class="assign-history">
+            <div class="assign-history-title">{% trans "Assignment History" %}</div>
+            {% for a in assignments %}
+            <div class="assign-row">
+                <div>
+                    <div class="assign-operator">
+                        <i class="fas fa-user" style="margin-right: 4px; color: #4ecca3;"></i>
+                        {{ a.assigned_to.username }}
+                    </div>
+                    <div class="assign-by">
+                        {% trans "by" %} {{ a.assigned_by.username }}
+                        {% if a.note %} · {{ a.note }}{% endif %}
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="status-badge status-{{ a.status }}">{{ a.get_status_display }}</span>
+                    <span class="assign-date">{{ a.created_at|date:"d M H:i" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
 </div>
 {% endblock %}
